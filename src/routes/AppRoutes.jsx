@@ -7,6 +7,7 @@ import MainLayout from '../layout/private/MainLayout';
 import DashboardPage from '../pages/private/DashboardPage';
 import TagPage from '../pages/private/TagPage';
 import PeriodPage from '../pages/private/PeriodPage';
+import MainLayoutPublic from '../layout/public/MainLayout';
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
@@ -14,9 +15,19 @@ const AppRoutes = () => {
     {
       element: <PublicRoutes />,
       children: [
-        { path: "/", element: <LandingPage /> },
-        { path: "/login", element: <LoginPage /> },
-      ]
+        {
+          path: "/",
+          element: <MainLayoutPublic />,
+          children: [
+            { index: true, element: <Navigate to="/dashboard" replace /> },
+            { path: "dashboard", element: <LandingPage /> },
+          ],
+        },
+        {
+          path: "/login",
+          element: <LoginPage />,
+        },
+      ],
     },
     {
       element: <PrivateRoutes />,
