@@ -1,18 +1,10 @@
 // src/pages/TagPage.jsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
-
-// Data dummy
-const initialTags = [
-  { id: 1, name: 'Penelitian', status: 'Active' },
-  { id: 2, name: 'Pengabdian Masyarakat', status: 'Active' },
-  { id: 3, name: 'Jurnal Internasional', status: 'Inactive' },
-  { id: 4, name: 'Seminar Nasional', status: 'Active' },
-  { id: 5, name: 'Hak Cipta', status: 'Active' },
-];
+import apiService from '../../utils/services/apiService';
 
 function TagPage() {
-  const [tags, setTags] = useState(initialTags);
+  const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(null);
   const [newTagName, setNewTagName] = useState('');
 
@@ -35,25 +27,39 @@ function TagPage() {
     confirmModalRef.current.showModal();
   };
 
-  const handleAddNewTag = () => {
+  const handleAddNewTag = async () => {
     if (newTagName.trim() === '') return;
-    const newTag = { id: Date.now(), name: newTagName, status: 'Active' };
-    setTags([...tags, newTag]);
+    const response = await apiService.post("/tag", { name: newTagName });
+    setTags([...tags, response.data]);
     addModalRef.current.close();
   };
 
   const handleEditTag = () => {
     if (!currentTag || currentTag.name.trim() === '') return;
-    setTags(tags.map(tag => (tag.id === currentTag.id ? currentTag : tag)));
+    setTags(tags.map(tag => (tag.name === currentTag.name ? currentTag : tag)));
     editModalRef.current.close();
   };
 
   const handleToggleStatus = () => {
     if (!currentTag) return;
     const updatedStatus = currentTag.status === 'Active' ? 'Inactive' : 'Active';
-    setTags(tags.map(tag => (tag.id === currentTag.id ? { ...tag, status: updatedStatus } : tag)));
+    setTags(tags.map(tag => (tag.name === currentTag.name ? { ...tag, status: updatedStatus } : tag)));
     confirmModalRef.current.close();
   };
+
+  const fetchTags = async () => {
+    try {
+      const res = await apiService.get("/tag");
+      console.log(res)
+      setTags(res.data); // sesuai backend: res.data = array tag
+    } catch (err) {
+      console.error("Failed to fetch tags:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, []);
 
   return (
     <div>
@@ -87,8 +93,8 @@ function TagPage() {
                 </tr>
               </thead>
               <tbody>
-                {tags.map((tag, index) => (
-                  <tr key={tag.id}>
+                {tags && tags.map((tag, index) => (
+                  <tr key={tag.name}>
                     <th>{index + 1}</th>
                     <td>{tag.name}</td>
                     <td>
