@@ -2,8 +2,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import apiService from '../../utils/services/apiService';
+import { useToast } from '../../context/ToastContext';
 
 function TagPage() {
+  const { addToast } = useToast()
+
   const [tags, setTags] = useState([]);
   const [currentTag, setCurrentTag] = useState(null);
   const [newTagName, setNewTagName] = useState('');
@@ -28,10 +31,21 @@ function TagPage() {
   };
 
   const handleAddNewTag = async () => {
-    if (newTagName.trim() === '') return;
-    const response = await apiService.post("/tag", { name: newTagName });
-    setTags([...tags, response.data]);
-    addModalRef.current.close();
+    if (newTagName.trim() === '') {
+      addToast("Tag name cannot be empty", "error")
+      return;
+    }
+
+    try {
+      const response = await apiService.post("/tag", { name: newTagName });
+      setTags([...tags, response.data]);
+      addModalRef.current.close();  
+      addToast("Tag added successfully", "success")
+    } catch (error) {
+      let message = error?.response?.data?.message || "Failed to add tag"
+      console.error("Failed to add tag:", error); 
+      addToast(message, "error")
+    }
   };
 
   const handleEditTag = () => {
@@ -98,8 +112,8 @@ function TagPage() {
                     <th>{index + 1}</th>
                     <td>{tag.name}</td>
                     <td>
-                      <span className={`badge ${tag.status === 'Active' ? 'badge-success' : 'badge-error'}`}>
-                        {tag.status}
+                      <span className={`badge ${tag.status === '1' ? 'badge-success' : 'badge-error'}`}>
+                        {tag.status === "1" ? "Active" : "Inactive"}
                       </span>
                     </td>
                     <td className="text-center">
