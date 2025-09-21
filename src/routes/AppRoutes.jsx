@@ -7,6 +7,7 @@ import MainLayout from '../layout/private/MainLayout';
 import DashboardPage from '../pages/private/DashboardPage';
 import TagPage from '../pages/private/TagPage';
 import PeriodPage from '../pages/private/PeriodPage';
+import BankPage from '../pages/private/BankPage';
 import MainLayoutPublic from '../layout/public/MainLayout';
 
 const AppRoutes = () => {
@@ -40,8 +41,9 @@ const AppRoutes = () => {
             // Redirect dari /app ke /app/dashboard
             { index: true, element: <Navigate to="/app/dashboard" replace /> },
             { path: "dashboard", element: <DashboardPage /> },
-            { path: "tags", element: <TagPage /> },
-            { path: "periods", element: <PeriodPage /> },
+            { path: "tag", element: <TagPage /> },
+            { path: "periode", element: <PeriodPage /> },
+            { path: "bank", element: <BankPage /> },
           ]
         }
       ]

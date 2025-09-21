@@ -1,7 +1,7 @@
 // src/layout/Sidebar.jsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { HomeIcon, TagIcon, CalendarDaysIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, TagIcon, CalendarDaysIcon, CreditCardIcon } from '@heroicons/react/24/outline';
 
 function Sidebar() {
   const commonClasses = "flex items-center gap-2 rounded-lg px-4 py-2";
@@ -27,7 +27,7 @@ function Sidebar() {
       </li>
       <li>
         <NavLink
-          to="/app/tags"
+          to="/app/tag"
           className={({ isActive }) => `${commonClasses} ${isActive ? activeClass : inactiveClass}`}
         >
           {/* --- Perubahan di sini: Gunakan TagIcon --- */}
@@ -37,12 +37,22 @@ function Sidebar() {
       </li>
       <li>
         <NavLink
-          to="/app/periods"
+          to="/app/periode"
           className={({ isActive }) => `${commonClasses} ${isActive ? activeClass : inactiveClass}`}
         >
           {/* --- Perubahan di sini: Gunakan CalendarDaysIcon --- */}
           <CalendarDaysIcon className="w-5 h-5" />
           Period
+        </NavLink>
+      </li>
+      <li>
+        <NavLink
+          to="/app/bank"
+          className={({ isActive }) => `${commonClasses} ${isActive ? activeClass : inactiveClass}`}
+        >
+          {/* --- Perubahan di sini: Gunakan CalendarDaysIcon --- */}
+          <CreditCardIcon className="w-5 h-5" />
+          Bank
         </NavLink>
       </li>
     </ul>

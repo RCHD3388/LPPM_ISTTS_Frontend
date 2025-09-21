@@ -1,4 +1,4 @@
-// src/pages/PeriodePage.jsx
+// src/pages/BankPage.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { PlusIcon, PencilIcon, TrashIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import apiService from '../../utils/services/apiService';
@@ -8,9 +8,9 @@ import PaginationController from '../../components/PaginationController';
 function PeriodPage() {
   const { addToast } = useToast()
 
-  const [periodes, setPeriodes] = useState([]);
-  const [currentPeriode, setCurrentPeriode] = useState(null);
-  const [newPeriodeName, setNewPeriodeName] = useState('');
+  const [banks, setBanks] = useState([]);
+  const [currentBank, setCurrentBank] = useState(null);
+  const [newBankName, setNewBankName] = useState('');
 
   const [postError, setPostError] = useState("")
 
@@ -29,80 +29,80 @@ function PeriodPage() {
 
 
   const handleOpenAddModal = () => {
-    setNewPeriodeName('');
+    setNewBankName('');
     addModalRef.current.showModal();
   };
 
-  const handleOpenEditModal = (periode) => {
-    setCurrentPeriode(periode);
+  const handleOpenEditModal = (bank) => {
+    setCurrentBank(bank);
     editModalRef.current.showModal();
   };
 
-  const handleOpenConfirmModal = (periode) => {
-    setCurrentPeriode(periode);
+  const handleOpenConfirmModal = (bank) => {
+    setCurrentBank(bank);
     confirmModalRef.current.showModal();
   };
 
-  const handleAddNewPeriode = async () => {
-    if (newPeriodeName.trim() === '') {
-      setPostError("Periode name cannot be empty")
+  const handleAddNewBank = async () => {
+    if (newBankName.trim() === '') {
+      setPostError("Bank name cannot be empty")
       return;
     }
 
     try {
-      const response = await apiService.post("/periode", { name: newPeriodeName });
-      setPeriodes([...periodes, response.data]);
+      const response = await apiService.post("/bank", { name: newBankName });
+      setBanks([...banks, response.data]);
       addModalRef.current.close();
-      addToast("Periode added successfully", "success")
+      addToast("Bank added successfully", "success")
     } catch (error) {
-      let message = error?.response?.data?.message || "Failed to add periode"
+      let message = error?.response?.data?.message || "Failed to add bank"
       addModalRef.current.close();
       addToast(message, "error")
     }
   };
 
-  const handleEditPeriode = async () => {
-    if (!currentPeriode || currentPeriode.name.trim() === '') {
-      setPostError("Periode name cannot be empty")
+  const handleEditBank = async () => {
+    if (!currentBank || currentBank.name.trim() === '') {
+      setPostError("Bank name cannot be empty")
       return;
     };
 
     try {
-      const response = await apiService.put(`/periode/${currentPeriode.id}`, { name: currentPeriode.name, status: currentPeriode.status });
-      setPeriodes(periodes.map(periode => (periode.id === currentPeriode.id ? currentPeriode : periode)));
+      const response = await apiService.put(`/bank/${currentBank.id}`, { name: currentBank.name, status: currentBank.status });
+      setBanks(banks.map(bank => (bank.id === currentBank.id ? currentBank : bank)));
       editModalRef.current.close();
-      addToast("Periode updated successfully", "success")
+      addToast("Bank updated successfully", "success")
     } catch (error) {
-      let message = error?.response?.data?.message || "Failed to update periode"
+      let message = error?.response?.data?.message || "Failed to update bank"
       editModalRef.current.close();
       addToast(message, "error")
     }
   };
 
   const handleToggleStatus = async () => {
-    if (!currentPeriode) {
-      addToast("Periode not found", "error")
+    if (!currentBank) {
+      addToast("Bank not found", "error")
       return;
     };
 
-    const updatedStatus = currentPeriode.status === '1' ? '0' : '1';
+    const updatedStatus = currentBank.status === '1' ? '0' : '1';
 
     try {
-      const response = await apiService.put(`/periode/${currentPeriode.id}`, { name: currentPeriode.name, status: updatedStatus });
-      setPeriodes(periodes.map(periode => (periode.name === currentPeriode.name ? { ...periode, status: updatedStatus } : periode)));
+      const response = await apiService.put(`/bank/${currentBank.id}`, { name: currentBank.name, status: updatedStatus });
+      setBanks(banks.map(bank => (bank.name === currentBank.name ? { ...bank, status: updatedStatus } : bank)));
       confirmModalRef.current.close();
-      addToast("Periode updated successfully", "success")
+      addToast("Bank updated successfully", "success")
     } catch (error) {
-      let message = error?.response?.data?.message || "Failed to update periode"
+      let message = error?.response?.data?.message || "Failed to update bank"
       confirmModalRef.current.close();
       addToast(message, "error")
     }
   };
 
-  const fetchPeriodes = async () => {
+  const fetchBanks = async () => {
     try {
       console.log(page, limit, searchQuery)
-      const res = await apiService.get("/periode", {
+      const res = await apiService.get("/bank", {
         page,
         limit,
         search: searchQuery || "",
@@ -113,29 +113,29 @@ function PeriodPage() {
       setHasNextPage(res.meta.hasNextPage);
       setHasPreviousPage(res.meta.hasPreviousPage);
 
-      setPeriodes(res.data); // sesuai backend: res.data = array periode
+      setBanks(res.data); // sesuai backend: res.data = array bank
     } catch (err) {
-      console.error("Failed to fetch periodes:", err);
+      console.error("Failed to fetch banks:", err);
     }
   };
 
   useEffect(() => {
 
-    fetchPeriodes();
+    fetchBanks();
   }, [page, limit]);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold">Periode Management</h1>
+          <h1 className="text-2xl font-bold">Bank Management</h1>
           <p className="mt-1 text-sm text-base-content/70">
-            Kelola, tambah, edit, dan nonaktifkan periode yang tersedia.
+            Kelola, tambah, edit, dan nonaktifkan bank yang tersedia.
           </p>
         </div>
         <button onClick={handleOpenAddModal} className="btn btn-primary">
           <PlusIcon className="w-5 h-5" />
-          Add New Periode
+          Add New Bank
         </button>
       </div>
 
@@ -146,12 +146,12 @@ function PeriodPage() {
             <div className="flex">
               <input
                 type="text"
-                placeholder="Search periode..."
+                placeholder="Search bank..."
                 className="input input-bordered w-full max-w-xs"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="btn btn-primary ml-2" onClick={() => { setPage(1); fetchPeriodes(); }}>
+              <button className="btn btn-primary ml-2" onClick={() => { setPage(1); fetchBanks(); }}>
                 Search
               </button>
             </div>
@@ -166,12 +166,12 @@ function PeriodPage() {
               hasPreviousPage={hasPreviousPage}
               onPageChange={(newPage) => {
                 setPage(newPage);
-                fetchPeriodes();
+                fetchBanks();
               }}
               onLimitChange={(newLimit) => {
                 setLimit(newLimit);
                 setPage(1); // reset ke page 1
-                fetchPeriodes();
+                fetchBanks();
               }}
             />
           </div>
@@ -182,35 +182,35 @@ function PeriodPage() {
                 <thead className='sticky top-0 bg-base-200'>
                   <tr>
                     <th>#</th>
-                    <th>Periode Name</th>
+                    <th>Bank Name</th>
                     <th>Status</th>
                     <th className="text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {periodes && periodes.map((periode, index) => (
-                    <tr key={periode.name}>
+                  {banks && banks.map((bank, index) => (
+                    <tr key={bank.name}>
                       <th>{index + 1}</th>
-                      <td>{periode.name}</td>
+                      <td>{bank.name}</td>
                       <td>
-                        <span className={`badge ${periode.status === '1' ? 'badge-success' : 'badge-error'}`}>
-                          {periode.status === "1" ? "Active" : "Inactive"}
+                        <span className={`badge ${bank.status === '1' ? 'badge-success' : 'badge-error'}`}>
+                          {bank.status === "1" ? "Active" : "Inactive"}
                         </span>
                       </td>
                       <td className="text-center">
                         {/* --- PERUBAHAN UTAMA: Tombol dengan Lebar Tetap --- */}
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => handleOpenEditModal(periode)} className="btn btn-sm btn-info btn-outline w-32 justify-start">
+                          <button onClick={() => handleOpenEditModal(bank)} className="btn btn-sm btn-info btn-outline w-32 justify-start">
                             <PencilIcon className="w-4 h-4 mr-2" />
                             <span>Edit</span>
                           </button>
-                          {periode.status === '1' ? (
-                            <button onClick={() => handleOpenConfirmModal(periode)} className="btn btn-sm btn-error btn-outline w-32 justify-start">
+                          {bank.status === '1' ? (
+                            <button onClick={() => handleOpenConfirmModal(bank)} className="btn btn-sm btn-error btn-outline w-32 justify-start">
                               <TrashIcon className="w-4 h-4 mr-2" />
                               <span>Deactivate</span>
                             </button>
                           ) : (
-                            <button onClick={() => handleOpenConfirmModal(periode)} className="btn btn-sm btn-success btn-outline w-32 justify-start">
+                            <button onClick={() => handleOpenConfirmModal(bank)} className="btn btn-sm btn-success btn-outline w-32 justify-start">
                               <ArrowPathIcon className="w-4 h-4 mr-2" />
                               <span>Activate</span>
                             </button>
@@ -227,34 +227,34 @@ function PeriodPage() {
       </div>
 
       {/* --- Semua Modal Tetap Sama --- */}
-      {/* --- Modal Add New Periode --- */}
+      {/* --- Modal Add New Bank --- */}
       <dialog ref={addModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Add New Periode</h3>
+          <h3 className="font-bold text-lg">Add New Bank</h3>
           <div className="py-4">
-            <label className="label"><span className="label-text">Periode Name</span></label>
-            <input type="text" placeholder="e.g., Jurnal SINTA 2" className="input input-bordered w-full" value={newPeriodeName} onChange={(e) => setNewPeriodeName(e.target.value)} />
+            <label className="label"><span className="label-text">Bank Name</span></label>
+            <input type="text" placeholder="e.g., Jurnal SINTA 2" className="input input-bordered w-full" value={newBankName} onChange={(e) => setNewBankName(e.target.value)} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
             <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleAddNewPeriode} className="btn btn-primary ml-2">Save Periode</button>
+            <button onClick={handleAddNewBank} className="btn btn-primary ml-2">Save Bank</button>
           </div>
         </div>
       </dialog>
 
-      {/* --- Modal Edit Periode --- */}
+      {/* --- Modal Edit Bank --- */}
       <dialog ref={editModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Edit Periode</h3>
+          <h3 className="font-bold text-lg">Edit Bank</h3>
           <div className="py-4">
-            <label className="label"><span className="label-text">Periode Name</span></label>
-            <input type="text" className="input input-bordered w-full" value={currentPeriode?.name || ''} onChange={(e) => setCurrentPeriode({ ...currentPeriode, name: e.target.value })} />
+            <label className="label"><span className="label-text">Bank Name</span></label>
+            <input type="text" className="input input-bordered w-full" value={currentBank?.name || ''} onChange={(e) => setCurrentBank({ ...currentBank, name: e.target.value })} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
             <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleEditPeriode} className="btn btn-primary ml-2">Save Changes</button>
+            <button onClick={handleEditBank} className="btn btn-primary ml-2">Save Changes</button>
           </div>
         </div>
       </dialog>
@@ -264,12 +264,12 @@ function PeriodPage() {
         <div className="modal-box">
           <h3 className="font-bold text-lg">Confirm Action</h3>
           <p className="py-4">
-            Are you sure you want to {currentPeriode?.status === '1' ? 'deactivate' : 'activate'} the periode "{currentPeriode?.name}"?
+            Are you sure you want to {currentBank?.status === '1' ? 'deactivate' : 'activate'} the bank "{currentBank?.name}"?
           </p>
           <div className="modal-action">
             <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleToggleStatus} className={`btn ${currentPeriode?.status === '1' ? 'btn-error' : 'btn-success'} ml-2`}>
-              Yes, {currentPeriode?.status === '1' ? 'Deactivate' : 'Activate'}
+            <button onClick={handleToggleStatus} className={`btn ${currentBank?.status === '1' ? 'btn-error' : 'btn-success'} ml-2`}>
+              Yes, {currentBank?.status === '1' ? 'Deactivate' : 'Activate'}
             </button>
           </div>
         </div>
