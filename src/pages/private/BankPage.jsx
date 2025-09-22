@@ -126,7 +126,7 @@ function PeriodPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Bank Management</h1>
           <p className="mt-1 text-sm text-base-content/70">
@@ -233,7 +233,7 @@ function PeriodPage() {
           <h3 className="font-bold text-lg">Add New Bank</h3>
           <div className="py-4">
             <label className="label"><span className="label-text">Bank Name</span></label>
-            <input type="text" placeholder="e.g., Jurnal SINTA 2" className="input input-bordered w-full" value={newBankName} onChange={(e) => setNewBankName(e.target.value)} />
+            <input type="text" placeholder="e.g., BCA (Bank Central Asia)" className="input input-bordered w-full" value={newBankName} onChange={(e) => setNewBankName(e.target.value)} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">

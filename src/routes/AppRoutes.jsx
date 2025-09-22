@@ -9,6 +9,12 @@ import TagPage from '../pages/private/TagPage';
 import PeriodPage from '../pages/private/PeriodPage';
 import BankPage from '../pages/private/BankPage';
 import MainLayoutPublic from '../layout/public/MainLayout';
+import FilePentingPage from '../pages/private/FilePentingPage';
+import PengumumanPage from '../pages/private/PengumumanPage';
+import LaporanPage from '../pages/private/Laporan';
+import ProposalPage from '../pages/private/Proposal';
+import DosenPage from '../pages/private/Dosen';
+import PengumumanDetailPage from '../pages/private/PengumumanDetailPage';
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
@@ -44,6 +50,12 @@ const AppRoutes = () => {
             { path: "tag", element: <TagPage /> },
             { path: "periode", element: <PeriodPage /> },
             { path: "bank", element: <BankPage /> },
+            { path: "filepenting", element: <FilePentingPage /> },
+            { path: "pengumuman", element: <PengumumanPage /> },
+            { path: "pengumuman/:pengumumanId", element: <PengumumanDetailPage /> },
+            { path: "dosen", element: <DosenPage /> },
+            { path: "proposal", element: <ProposalPage /> },
+            { path: "laporan", element: <LaporanPage /> },
           ]
         }
       ]

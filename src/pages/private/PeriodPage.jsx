@@ -126,7 +126,7 @@ function PeriodPage() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Periode Management</h1>
           <p className="mt-1 text-sm text-base-content/70">
@@ -233,7 +233,7 @@ function PeriodPage() {
           <h3 className="font-bold text-lg">Add New Periode</h3>
           <div className="py-4">
             <label className="label"><span className="label-text">Periode Name</span></label>
-            <input type="text" placeholder="e.g., Jurnal SINTA 2" className="input input-bordered w-full" value={newPeriodeName} onChange={(e) => setNewPeriodeName(e.target.value)} />
+            <input type="text" placeholder="e.g., 2025/2026 GASAL" className="input input-bordered w-full" value={newPeriodeName} onChange={(e) => setNewPeriodeName(e.target.value)} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
