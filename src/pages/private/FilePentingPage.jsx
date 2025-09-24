@@ -10,6 +10,10 @@ import FileCard from "../../components/FileCard";
 function FilePentingPage() {
   const addModalRef = useRef(null);
 
+  const [postTitleError, setPostTitleError] = useState("");
+  const [postTagError, setPostTagError] = useState("");
+  const [postAttachmentError, setPostAttachmentError] = useState("");
+
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [attachment, setAttachment] = useState(null);
@@ -22,8 +26,21 @@ function FilePentingPage() {
   };
 
   const handleSaveFile = () => {
-    if (!title.trim() || !tag || !attachment) {
-      alert("Semua field wajib diisi!");
+    
+    setPostTitleError("")
+    setPostTagError("")
+    setPostAttachmentError("")
+
+    if (!title.trim()) {
+      setPostTitleError("Title cannot be empty!");
+      return;
+    }
+    if (!tag) {
+      setPostTagError("Tag must be selected!");
+      return;
+    }
+    if (!attachment) {
+      setPostAttachmentError("Attachment must be provided!");
       return;
     }
 
@@ -31,7 +48,6 @@ function FilePentingPage() {
       title,
       tag,
       attachment,
-      date: new Date(),
     };
 
     console.log("File Penting baru:", payload);
@@ -132,6 +148,9 @@ function FilePentingPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
+              {postTitleError && (
+                <span className="text-error text-sm">{postTitleError}</span>
+              )}
             </div>
 
             {/* Tag */}
@@ -149,6 +168,9 @@ function FilePentingPage() {
                 <option value="Laporan">Laporan</option>
                 <option value="Dosen">Dosen</option>
               </select>
+              {postTagError && (
+                <span className="text-error text-sm">{postTagError}</span>
+              )}
             </div>
 
             {/* Attachment */}
@@ -157,6 +179,9 @@ function FilePentingPage() {
                 <span className="label-text">Attachment</span>
               </label>
               <AttachmentInput value={attachment} onChange={setAttachment} />
+              {postAttachmentError && (
+                <span className="text-error text-sm">{postAttachmentError}</span>
+              )}
             </div>
           </div>
 
