@@ -1,26 +1,22 @@
 import React, { useState } from "react";
+import ComboBox from "../../components/Combobox";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-white shadow-md fixed w-full z-20 top-0 left-0">
+    <nav className="bg-base-100 shadow-md fixed w-full z-20 top-0 left-0 text-base-content ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-fit py-2">
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <img src="/logo.png" alt="Logo" className="h-10 w-auto" />
+            <img src="/lppm.png" alt="Logo" className="h-[9vh] w-auto" />
           </div>
 
           {/* Search Bar (center) */}
-          <div className="hidden md:flex flex-1 justify-center px-4">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="w-1/2 px-3 py-1 rounded-md border border-gray-300 
-                         focus:outline-none focus:ring focus:ring-indigo-400"
-            />
+          <div className="hidden md:flex flex-1 justify-center px-4 max-w-[35vw]">
+            <ComboBox />
           </div>
 
           {/* Right Side */}
@@ -28,8 +24,9 @@ const Navbar = () => {
             {/* Desktop Menu */}
             <div className="hidden md:flex space-x-6 items-center">
 
-              <div className="relative group">
-                <button className="hover:text-indigo-500 flex items-center">
+                            {/* Dropdown */}
+              <div className="dropdown dropdown-hover">
+                <div tabIndex={0} role="button" className="btn btn-ghost text-lg ">
                   Services
                   <svg
                     className="w-4 h-4 ml-1"
@@ -44,30 +41,27 @@ const Navbar = () => {
                       d="M19 9l-7 7-7-7"
                     />
                   </svg>
-                </button>
-                {/* Dropdown */}
-                <div className="absolute hidden group-hover:block bg-white rounded shadow-md mt-2 w-40">
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                    Web Dev
-                  </a>
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                    Mobile App
-                  </a>
-                  <a href="#" className="block px-4 py-2 hover:bg-gray-100">
-                    AI/ML
-                  </a>
                 </div>
+                <ul
+                  tabIndex={0}
+                  className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+                >
+                  <li>
+                    <a href="#author" className="text-md">Authors</a>
+                  </li>
+                  <li>
+                    <a href="#statistic" className="text-md">Statistics</a>
+                  </li>
+                </ul>
               </div>
-              
-              <a href="#" className="hover:text-indigo-500">
-                Contact
-              </a>
+
+              <div className="btn btn-primary ms-5">Login</div>
             </div>
 
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md bg-gray-200"
+              className="md:hidden btn btn-ghost btn-square"
             >
               ☰
             </button>
@@ -77,19 +71,16 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-2 bg-white">
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-base-100">
           {/* Search Bar in mobile */}
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-3 py-1 rounded-md border border-gray-300 
-                       focus:outline-none focus:ring focus:ring-indigo-400"
-          />
-          <a href="#" className="block hover:text-indigo-500">
-            Services
+          <div className="w-full">
+            <ComboBox />
+          </div>
+          <a href="#" className="block px-2 py-1 rounded hover:bg-base-200">
+            Authors
           </a>
-          <a href="#" className="block hover:text-indigo-500">
-            Contact
+          <a href="#" className="block px-2 py-1 rounded hover:bg-base-200">
+            Statistics
           </a>
         </div>
       )}

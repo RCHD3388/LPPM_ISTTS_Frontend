@@ -5,7 +5,7 @@ import './App.css'
 import AppRoutes from './routes/AppRoutes'
 
 function App() {
-  return <AppRoutes/>
+  return <AppRoutes data-theme="lppm"/>
 }
 
 export default App

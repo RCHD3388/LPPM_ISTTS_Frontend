@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 const ImageCarousel = ({
   images = ["/banner1.jpg", "/banner2.jpg", "/banner3.jpg"],
   intervalMs = 3000,
-  placeholderText = "Placeholder Text",
   heightClass = "h-64",
 }) => {
   const [current, setCurrent] = useState(0);
@@ -27,9 +26,9 @@ const ImageCarousel = ({
   };
 
   return (
-    <div className="w-full mt-20 px-4"> {/* 🔑 tambah margin top supaya turun */}
+    <div className="w-full mt-25 px-4">
       <div
-        className={`relative w-full ${heightClass} overflow-hidden rounded-xl shadow-md`}
+        className={`relative w-full ${heightClass} overflow-hidden rounded-xl shadow-lg`}
         onMouseEnter={pause}
         onMouseLeave={resume}
       >
@@ -50,12 +49,17 @@ const ImageCarousel = ({
           </div>
         ))}
 
-        {/* Overlay placeholder text */}
+        {/* Overlay slogan LPPM (tetap 1) */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="px-4 py-2 rounded-lg bg-black/40">
-            <span className="text-white text-xl font-semibold">
-              {placeholderText}
-            </span>
+          <div className="flex justify-center">
+            <div className="text-primary-content text-lg font-bold tracking-wide w-[80%] bg-primary/80 text-center px-4 py-3 rounded-lg ">
+              <div className="text-7xl">
+                LPPM ISTTS
+              </div>
+              <div className="mt-3">
+                Menghubungkan Penelitian dan Pengabdian demi Masyarakat.
+              </div>
+            </div>
           </div>
         </div>
 
@@ -64,8 +68,10 @@ const ImageCarousel = ({
           {images.map((_, idx) => (
             <span
               key={idx}
-              className={`w-2.5 h-2.5 rounded-full ${
-                idx === current ? "bg-white" : "bg-white/60"
+              className={`w-3 h-3 rounded-full transition-colors duration-300 ${
+                idx === current
+                  ? "bg-primary"
+                  : "bg-base-100 border border-base-300"
               }`}
             />
           ))}
