@@ -6,10 +6,13 @@ import {
 } from "@heroicons/react/24/outline";
 import AttachmentInput from "../../components/AttachmentInput";
 import FileCard from "../../components/FileCard";
+import apiService from "../../utils/services/apiService";
+import { useEffect } from "react";
 
 function FilePentingPage() {
   const addModalRef = useRef(null);
 
+  const [tagOptions, setTagOptions] = useState([]);
   const [postTitleError, setPostTitleError] = useState("");
   const [postTagError, setPostTagError] = useState("");
   const [postAttachmentError, setPostAttachmentError] = useState("");
@@ -18,6 +21,9 @@ function FilePentingPage() {
   const [tag, setTag] = useState("");
   const [attachment, setAttachment] = useState(null);
 
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
+  const [files, setFiles] = useState([]);
+
   const handleOpenAddModal = () => {
     setTitle("");
     setTag("");
@@ -25,8 +31,17 @@ function FilePentingPage() {
     addModalRef.current.showModal();
   };
 
-  const handleSaveFile = () => {
-    
+  const updateTagOptions = async () => {
+    try {
+      const response = await apiService.get("/tag", { status: "1" });
+      setTagOptions(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSaveFile = async () => {
+
     setPostTitleError("")
     setPostTagError("")
     setPostAttachmentError("")
@@ -44,41 +59,35 @@ function FilePentingPage() {
       return;
     }
 
-    const payload = {
-      title,
-      tag,
-      attachment,
-    };
+    const formData = new FormData();
+    
+    formData.append("title", title);
+    formData.append("tag", tag);
+    formData.append("type", attachment.type);
+    if(attachment.type === "file"){
+      formData.append("file", attachment.file);
+    }else if(attachment.type === "link"){
+      formData.append("link", attachment.url);
+    }
 
-    console.log("File Penting baru:", payload);
+    let response = await apiService.post("/filepenting", formData)
+
+    const newData = {
+      title: response.data.title,
+      tag: response.data.tag,
+      type: response.data.type,
+      value: response.data.value,
+      date: new Date(),
+    }
+    setFiles((prev) => [newData, ...prev])
+
+    handleOpenAddModal();
     addModalRef.current.close();
   };
 
-
-  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
-  const [files] = useState([
-    {
-      title: "Panduan Proposal",
-      tag: "Proposal",
-      type: "link",
-      value: "https://drive.google.com/xxxxx",
-      date: new Date(),
-    },
-    {
-      title: "Laporan Akhir",
-      tag: "Laporan",
-      type: "file",
-      value: new File(["dummy"], "laporan.pdf"),
-      date: new Date(),
-    },
-    {
-      title: "Panduan Proposal",
-      tag: "Proposal",
-      type: "link",
-      value: "https://drive.google.com/xxxxx",
-      date: new Date(),
-    },
-  ]);
+  useEffect(() => {
+    updateTagOptions();
+  }, []);
 
   return (
     <div className="p-6">
@@ -164,9 +173,9 @@ function FilePentingPage() {
                 onChange={(e) => setTag(e.target.value)}
               >
                 <option value="">Pilih Tag</option>
-                <option value="Proposal">Proposal</option>
-                <option value="Laporan">Laporan</option>
-                <option value="Dosen">Dosen</option>
+                {tagOptions && tagOptions.map((tagOption, idx) => (
+                  <option key={idx} value={tagOption.id}>{tagOption.name}</option>
+                ))}
               </select>
               {postTagError && (
                 <span className="text-error text-sm">{postTagError}</span>

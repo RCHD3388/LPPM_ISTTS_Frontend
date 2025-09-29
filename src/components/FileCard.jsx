@@ -34,7 +34,7 @@ const FileCard = ({ file, viewMode }) => {
         {/* Aksi */}
         <div className="card-actions justify-end">
           <a
-            href={file.type === "link" ? file.value : URL.createObjectURL(file.value)}
+            href={file.value}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-xs btn-outline"
