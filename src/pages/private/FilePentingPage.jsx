@@ -8,6 +8,7 @@ import AttachmentInput from "../../components/AttachmentInput";
 import FileCard from "../../components/FileCard";
 import apiService from "../../utils/services/apiService";
 import { useEffect } from "react";
+import PaginationController from "../../components/PaginationController";
 
 function FilePentingPage() {
   const addModalRef = useRef(null);
@@ -23,6 +24,15 @@ function FilePentingPage() {
 
   const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
   const [files, setFiles] = useState([]);
+
+  // Pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);           // currentPage
+  const [limit, setLimit] = useState(10);        // pageSize
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
   const handleOpenAddModal = () => {
     setTitle("");
@@ -60,34 +70,52 @@ function FilePentingPage() {
     }
 
     const formData = new FormData();
-    
+
     formData.append("title", title);
     formData.append("tag", tag);
+    console.log(tag)
     formData.append("type", attachment.type);
-    if(attachment.type === "file"){
+    if (attachment.type === "file") {
       formData.append("file", attachment.file);
-    }else if(attachment.type === "link"){
+    } else if (attachment.type === "link") {
       formData.append("link", attachment.url);
     }
 
     let response = await apiService.post("/filepenting", formData)
 
-    const newData = {
-      title: response.data.title,
-      tag: response.data.tag,
-      type: response.data.type,
-      value: response.data.value,
-      date: new Date(),
-    }
+    const newData = response.data
     setFiles((prev) => [newData, ...prev])
 
     handleOpenAddModal();
     addModalRef.current.close();
   };
 
+  const fetchFilePenting = async () => {
+    try {
+      console.log(page, limit, searchQuery)
+      const res = await apiService.get("/filepenting", {
+        page,
+        limit,
+        search: searchQuery || "",
+      });
+
+      setTotalItems(res.meta.totalItems);
+      setTotalPages(res.meta.totalPages);
+      setHasNextPage(res.meta.hasNextPage);
+      setHasPreviousPage(res.meta.hasPreviousPage);
+
+      setFiles(res.data); // sesuai backend: res.data = array periode
+    } catch (err) {
+      console.error("Failed to fetch periodes:", err);
+    }
+  };
+
   useEffect(() => {
     updateTagOptions();
   }, []);
+  useEffect(() => {
+    fetchFilePenting();
+  }, [page, limit]);
 
   return (
     <div className="p-6">
@@ -108,19 +136,39 @@ function FilePentingPage() {
       </div>
 
       {/* View Mode Switcher */}
-      <div className="btn-group mb-2">
-        <button
-          className={`btn btn-sm ${viewMode === "grid" ? "btn-active" : ""}`}
-          onClick={() => setViewMode("grid")}
-        >
-          <Squares2X2Icon className="w-5 h-5" />
-        </button>
-        <button
-          className={`btn btn-sm ${viewMode === "list" ? "btn-active" : ""}`}
-          onClick={() => setViewMode("list")}
-        >
-          <Bars3Icon className="w-5 h-5" />
-        </button>
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+        <div className="btn-group mb-2">
+          <button
+            className={`btn btn-sm ${viewMode === "grid" ? "btn-active" : ""}`}
+            onClick={() => setViewMode("grid")}
+          >
+            <Squares2X2Icon className="w-5 h-5" />
+          </button>
+          <button
+            className={`btn btn-sm ${viewMode === "list" ? "btn-active" : ""}`}
+            onClick={() => setViewMode("list")}
+          >
+            <Bars3Icon className="w-5 h-5" />
+          </button>
+        </div>
+
+        <PaginationController
+          page={page}
+          limit={limit}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            fetchPeriodes();
+          }}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1); // reset ke page 1
+            fetchPeriodes();
+          }}
+        />
       </div>
 
       {/* Daftar File Penting */}
