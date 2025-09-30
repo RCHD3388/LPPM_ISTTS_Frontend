@@ -15,6 +15,10 @@ import LaporanPage from '../pages/private/Laporan';
 import ProposalPage from '../pages/private/Proposal';
 import DosenPage from '../pages/private/Dosen';
 import PengumumanDetailPage from '../pages/private/PengumumanDetailPage';
+import AuthorPage from '../pages/public/AuthorPage';
+import AuthorListPage from '../pages/public/AuthorListPage';
+import StatisticPage from '../pages/public/StatisticPage';
+import DepartmentListPage from '../pages/public/DepartmenListPage';
 
 const AppRoutes = () => {
   const router = createBrowserRouter([
@@ -28,6 +32,10 @@ const AppRoutes = () => {
           children: [
             { index: true, element: <Navigate to="/dashboard" replace /> },
             { path: "dashboard", element: <LandingPage /> },
+            { path: "author", element: <AuthorListPage/>},
+            { path: "author/:authorId", element: <AuthorPage/>},
+            { path: "statistic", element: <StatisticPage/>},
+            { path: "department", element: <DepartmentListPage/>},
           ],
         },
         {

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ComboBox from "../../components/Combobox";
+import { Link, useLocation } from "react-router-dom";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
+  const location = useLocation();
+  const isAuthorPage = location.pathname.startsWith("/author");
   return (
     <nav className="bg-base-100 shadow-md fixed w-full z-20 top-0 left-0 text-base-content ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -11,12 +13,13 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <img src="/lppm.png" alt="Logo" className="h-[9vh] w-auto" />
+            <img src="/lppm.png" alt="Logo" className="h-[7vh] w-auto" />
           </div>
 
           {/* Search Bar (center) */}
+          
           <div className="hidden md:flex flex-1 justify-center px-4 max-w-[35vw]">
-            <ComboBox />
+            {!isAuthorPage && <ComboBox />}
           </div>
 
           {/* Right Side */}
@@ -27,7 +30,7 @@ const Navbar = () => {
                             {/* Dropdown */}
               <div className="dropdown dropdown-hover">
                 <div tabIndex={0} role="button" className="btn btn-ghost text-lg ">
-                  Services
+                  View
                   <svg
                     className="w-4 h-4 ml-1"
                     fill="none"

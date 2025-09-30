@@ -14,7 +14,7 @@ const LandingPage = () => {
             images={["/istts.jpg", "/istts2.jpg"]}
             intervalMs={3500}
             placeholderText="Academic Excellence in Science and Technology"
-            heightClass="h-[60vh]"
+            heightClass="h-[35vh]"
           />
           {/* Jurnal */}
           <div className="mt-10 text-4xl text-center text-primary font-bold">

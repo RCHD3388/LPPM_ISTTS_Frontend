@@ -35,7 +35,7 @@ export default function ArticleContainer() {
   ];
 
   return (
-    <div className="flex flex-col gap-4 w-full m-4 border-1 border-black p-5 rounded-lg max-h-[30vh] overflow-y-auto">
+    <div className="flex flex-col gap-4 w-full m-4 border-1 border-black p-5 rounded-lg max-h-[55vh] overflow-y-auto">
       {articles.map((article) => (
         <Article key={article.id} article={article} />
       ))}

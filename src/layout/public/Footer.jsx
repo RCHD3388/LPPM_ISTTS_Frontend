@@ -15,9 +15,9 @@ export default function Footer() {
         <a href="https://pmb.istts.ac.id/" className="link link-hover">
           Penerimaan Mahasiswa Baru ISTTS
         </a>
-        {/* <a href="#" className="link link-hover">
-          Kebijakan
-        </a> */}
+        <a href="https://sim.isttsc.ac.id/" className="link link-hover">
+          Sistem Informasi Mahasiswa
+        </a>
       </div>
       <div className="mt-2 flex gap-6">
         <a href="https://facebook.com" target="_blank" rel="noreferrer">
