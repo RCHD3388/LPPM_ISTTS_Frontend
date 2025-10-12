@@ -12,7 +12,7 @@ import MainLayoutPublic from '../layout/public/MainLayout';
 import FilePentingPage from '../pages/private/FilePentingPage';
 import PengumumanPage from '../pages/private/PengumumanPage';
 import LaporanPage from '../pages/private/Laporan';
-import ProposalPage from '../pages/private/Proposal';
+import ProposalPage from '../pages/private/ProposalPage';
 import DosenPage from '../pages/private/Dosen';
 import PengumumanDetailPage from '../pages/private/PengumumanDetailPage';
 
