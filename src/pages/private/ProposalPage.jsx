@@ -5,28 +5,23 @@ import ProposalFilterBar from "../../components/proposal/ProposalFilterBar";
 import ProposalUploadModal from "../../components/proposal/ProposalUploadModal";
 import ProposalDetailModal from "../../components/proposal/ProposalDetailModal";
 
-function ProposalPage({ userRole = "ketua", userName = "Dr. Dosen A" }) {
+function ProposalPage({ userRole = "dosen", userName = "Dr. Dosen A" }) {
   const [proposals, setProposals] = useState([
     {
       id: 1,
       title: "Riset AI untuk Pembelajaran Adaptif",
+      jenis: "Penelitian", // 🔹 baru
       periode: "2025/2026",
       tag: "Teknologi",
-      contributors: ["Dr. Dosen A"],
-      date: new Date(),
-      status: "Menunggu",
-      fileUrl: "/proposal1.pdf",
-    },
-    {
-      id: 2,
-      title: "Inovasi Pengajaran Berbasis IoT",
-      periode: "2025/2026",
-      tag: "Pendidikan",
-      contributors: ["Dr. Dosen B", "Dr. Dosen A"],
+      contributors: ["Dr. Dosen A", "Dr. Dosen B"],
+      danaDiajukan: 25000000, // 🔹 baru
+      danaDisetujui: 0,       // 🔹 baru, hanya diisi ketua
+      perluLaporan: true,     // 🔹 baru
+      lampiranKetua: "/proposal.pdf",     // 🔹 baru
       date: new Date(),
       status: "Disetujui",
-      fileUrl: "/proposal2.pdf",
-    },
+      fileUrl: "/proposal.pdf",
+    }
   ]);
 
   const [filters, setFilters] = useState({ search: "", status: "", periode: "", tag: "" });

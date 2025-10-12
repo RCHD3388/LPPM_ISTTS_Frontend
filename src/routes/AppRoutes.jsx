@@ -11,7 +11,7 @@ import BankPage from '../pages/private/BankPage';
 import MainLayoutPublic from '../layout/public/MainLayout';
 import FilePentingPage from '../pages/private/FilePentingPage';
 import PengumumanPage from '../pages/private/PengumumanPage';
-import LaporanPage from '../pages/private/Laporan';
+import LaporanPage from '../pages/private/LaporanPage';
 import ProposalPage from '../pages/private/ProposalPage';
 import DosenPage from '../pages/private/Dosen';
 import PengumumanDetailPage from '../pages/private/PengumumanDetailPage';
