@@ -6,13 +6,33 @@ import {
 } from "@heroicons/react/24/outline";
 import AttachmentInput from "../../components/AttachmentInput";
 import FileCard from "../../components/FileCard";
+import apiService from "../../utils/services/apiService";
+import { useEffect } from "react";
+import PaginationController from "../../components/PaginationController";
 
 function FilePentingPage() {
   const addModalRef = useRef(null);
 
+  const [tagOptions, setTagOptions] = useState([]);
+  const [postTitleError, setPostTitleError] = useState("");
+  const [postTagError, setPostTagError] = useState("");
+  const [postAttachmentError, setPostAttachmentError] = useState("");
+
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [attachment, setAttachment] = useState(null);
+
+  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
+  const [files, setFiles] = useState([]);
+
+  // Pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);           // currentPage
+  const [limit, setLimit] = useState(10);        // pageSize
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
   const handleOpenAddModal = () => {
     setTitle("");
@@ -21,48 +41,81 @@ function FilePentingPage() {
     addModalRef.current.showModal();
   };
 
-  const handleSaveFile = () => {
-    if (!title.trim() || !tag || !attachment) {
-      alert("Semua field wajib diisi!");
+  const updateTagOptions = async () => {
+    try {
+      const response = await apiService.get("/tag", { status: "1" });
+      setTagOptions(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSaveFile = async () => {
+
+    setPostTitleError("")
+    setPostTagError("")
+    setPostAttachmentError("")
+
+    if (!title.trim()) {
+      setPostTitleError("Title cannot be empty!");
+      return;
+    }
+    if (!tag) {
+      setPostTagError("Tag must be selected!");
+      return;
+    }
+    if (!attachment) {
+      setPostAttachmentError("Attachment must be provided!");
       return;
     }
 
-    const payload = {
-      title,
-      tag,
-      attachment,
-      date: new Date(),
-    };
+    const formData = new FormData();
 
-    console.log("File Penting baru:", payload);
+    formData.append("title", title);
+    formData.append("tag", tag);
+    console.log(tag)
+    formData.append("type", attachment.type);
+    if (attachment.type === "file") {
+      formData.append("file", attachment.file);
+    } else if (attachment.type === "link") {
+      formData.append("link", attachment.url);
+    }
+
+    let response = await apiService.post("/filepenting", formData)
+
+    const newData = response.data
+    setFiles((prev) => [newData, ...prev])
+
+    handleOpenAddModal();
     addModalRef.current.close();
   };
 
+  const fetchFilePenting = async () => {
+    try {
+      console.log(page, limit, searchQuery)
+      const res = await apiService.get("/filepenting", {
+        page,
+        limit,
+        search: searchQuery || "",
+      });
 
-  const [viewMode, setViewMode] = useState("grid"); // "grid" | "list"
-  const [files] = useState([
-    {
-      title: "Panduan Proposal",
-      tag: "Proposal",
-      type: "link",
-      value: "https://drive.google.com/xxxxx",
-      date: new Date(),
-    },
-    {
-      title: "Laporan Akhir",
-      tag: "Laporan",
-      type: "file",
-      value: new File(["dummy"], "laporan.pdf"),
-      date: new Date(),
-    },
-    {
-      title: "Panduan Proposal",
-      tag: "Proposal",
-      type: "link",
-      value: "https://drive.google.com/xxxxx",
-      date: new Date(),
-    },
-  ]);
+      setTotalItems(res.meta.totalItems);
+      setTotalPages(res.meta.totalPages);
+      setHasNextPage(res.meta.hasNextPage);
+      setHasPreviousPage(res.meta.hasPreviousPage);
+
+      setFiles(res.data); // sesuai backend: res.data = array periode
+    } catch (err) {
+      console.error("Failed to fetch periodes:", err);
+    }
+  };
+
+  useEffect(() => {
+    updateTagOptions();
+  }, []);
+  useEffect(() => {
+    fetchFilePenting();
+  }, [page, limit]);
 
   return (
     <div className="p-6">
@@ -83,19 +136,39 @@ function FilePentingPage() {
       </div>
 
       {/* View Mode Switcher */}
-      <div className="btn-group mb-2">
-        <button
-          className={`btn btn-sm ${viewMode === "grid" ? "btn-active" : ""}`}
-          onClick={() => setViewMode("grid")}
-        >
-          <Squares2X2Icon className="w-5 h-5" />
-        </button>
-        <button
-          className={`btn btn-sm ${viewMode === "list" ? "btn-active" : ""}`}
-          onClick={() => setViewMode("list")}
-        >
-          <Bars3Icon className="w-5 h-5" />
-        </button>
+      <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
+        <div className="btn-group mb-2">
+          <button
+            className={`btn btn-sm ${viewMode === "grid" ? "btn-active" : ""}`}
+            onClick={() => setViewMode("grid")}
+          >
+            <Squares2X2Icon className="w-5 h-5" />
+          </button>
+          <button
+            className={`btn btn-sm ${viewMode === "list" ? "btn-active" : ""}`}
+            onClick={() => setViewMode("list")}
+          >
+            <Bars3Icon className="w-5 h-5" />
+          </button>
+        </div>
+
+        <PaginationController
+          page={page}
+          limit={limit}
+          totalItems={totalItems}
+          totalPages={totalPages}
+          hasNextPage={hasNextPage}
+          hasPreviousPage={hasPreviousPage}
+          onPageChange={(newPage) => {
+            setPage(newPage);
+            fetchPeriodes();
+          }}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1); // reset ke page 1
+            fetchPeriodes();
+          }}
+        />
       </div>
 
       {/* Daftar File Penting */}
@@ -132,6 +205,9 @@ function FilePentingPage() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
               />
+              {postTitleError && (
+                <span className="text-error text-sm">{postTitleError}</span>
+              )}
             </div>
 
             {/* Tag */}
@@ -145,10 +221,13 @@ function FilePentingPage() {
                 onChange={(e) => setTag(e.target.value)}
               >
                 <option value="">Pilih Tag</option>
-                <option value="Proposal">Proposal</option>
-                <option value="Laporan">Laporan</option>
-                <option value="Dosen">Dosen</option>
+                {tagOptions && tagOptions.map((tagOption, idx) => (
+                  <option key={idx} value={tagOption.id}>{tagOption.name}</option>
+                ))}
               </select>
+              {postTagError && (
+                <span className="text-error text-sm">{postTagError}</span>
+              )}
             </div>
 
             {/* Attachment */}
@@ -157,6 +236,9 @@ function FilePentingPage() {
                 <span className="label-text">Attachment</span>
               </label>
               <AttachmentInput value={attachment} onChange={setAttachment} />
+              {postAttachmentError && (
+                <span className="text-error text-sm">{postAttachmentError}</span>
+              )}
             </div>
           </div>
 

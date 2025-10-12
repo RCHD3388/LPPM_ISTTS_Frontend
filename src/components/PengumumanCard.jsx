@@ -7,14 +7,14 @@ function PengumumanCard({ pengumuman, onClick }) {
       onClick={() => onClick(pengumuman)}
     >
       <div className="card-body p-4">
-        <h2 className="card-title text-base">{pengumuman.title}</h2>
+        <h2 className="card-title text-base">{pengumuman.judul}</h2>
         <p className="line-clamp-2 text-sm text-base-content/70">
-          {pengumuman.content}
+          {pengumuman.isi}
         </p>
         <div className="flex flex-wrap gap-2 mt-2">
           <div className="badge badge-neutral">{pengumuman.tag}</div>
           <div className="badge badge-outline">
-            {pengumuman.attachments.length} Attachment
+            {pengumuman.jumlah_lampiran} Attachment
           </div>
         </div>
         <div className="card-actions justify-end mt-2">

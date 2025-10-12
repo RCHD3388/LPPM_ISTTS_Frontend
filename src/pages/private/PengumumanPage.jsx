@@ -1,29 +1,31 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PlusIcon, Squares2X2Icon, Bars3Icon } from "@heroicons/react/24/outline";
 import PengumumanCard from "../../components/PengumumanCard";
 import AttachmentInputMultiple from "../../components/AttachmentInputMultiple";
+import { useEffect } from "react";
+import apiService from "../../utils/services/apiService";
 
-function PengumumanPage({ onOpenDetail }) {
+function PengumumanPage() {
   const addModalRef = useRef(null);
 
+  const [tagOptions, setTagOptions] = useState([]);
   const [title, setTitle] = useState("");
   const [tag, setTag] = useState("");
   const [content, setContent] = useState("");
   const [attachments, setAttachments] = useState([]);
 
   const [viewMode, setViewMode] = useState("grid");
-  const [pengumumanList, setPengumumanList] = useState([
-    {
-      title: "Jadwal Sidang Proposal",
-      tag: "Akademik",
-      content: "Sidang proposal akan dilaksanakan pada minggu depan...",
-      attachments: [
-        { type: "link", value: "https://drive.google.com/xxx", date: new Date() },
-        { type: "file", value: new File(["dummy"], "jadwal.pdf"), date: new Date() },
-      ],
-      date: new Date(),
-    },
-  ]);
+  const [pengumumanList, setPengumumanList] = useState([]);
+
+  // Pagination state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);           // currentPage
+  const [limit, setLimit] = useState(10);        // pageSize
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
   const handleOpenAddModal = () => {
     setTitle("");
@@ -33,21 +35,72 @@ function PengumumanPage({ onOpenDetail }) {
     addModalRef.current.showModal();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim() || !tag || !content.trim()) {
       alert("Judul, isi, dan tag wajib diisi!");
       return;
     }
-    const payload = {
-      title,
-      tag,
-      content,
-      attachments,
-      date: new Date(),
-    };
-    setPengumumanList([...pengumumanList, payload]);
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("tag", tag);
+    formData.append("body", content);
+    attachments.forEach((attachment) => {
+      if (attachment.type === "file") {
+        formData.append("files", attachment.value);
+      } else if (attachment.type === "link") {
+        formData.append("links", attachment.value);
+      }
+    });
+
+    const response = await apiService.post("/pengumuman", formData);
+
+
+
+    setPengumumanList([...pengumumanList, response.data]);
     addModalRef.current.close();
   };
+
+  const updateTagOptions = async () => {
+    try {
+      const response = await apiService.get("/tag", { status: "1" });
+      setTagOptions(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const fetchPengumuman = async () => {
+    try {
+      console.log(page, limit, searchQuery)
+      const res = await apiService.get("/pengumuman", {
+        page,
+        limit,
+        search: searchQuery || "",
+      });
+
+      setTotalItems(res.meta.totalItems);
+      setTotalPages(res.meta.totalPages);
+      setHasNextPage(res.meta.hasNextPage);
+      setHasPreviousPage(res.meta.hasPreviousPage);
+
+      setPengumumanList(res.data); // sesuai backend: res.data = array periode
+    } catch (err) {
+      console.error("Failed to fetch periodes:", err);
+    }
+  };
+
+  const navigate = useNavigate();
+  const onOpenDetail = (pengumuman) => {
+    const path = `/app/pengumuman/${pengumuman.id}`;
+    navigate(path);
+  }
+
+  useEffect(() => {
+    updateTagOptions();
+  }, []);
+  useEffect(() => {
+    fetchPengumuman();
+  }, [page, limit]);
 
   return (
     <div className="p-6">
@@ -135,9 +188,9 @@ function PengumumanPage({ onOpenDetail }) {
                 onChange={(e) => setTag(e.target.value)}
               >
                 <option value="">Pilih Tag</option>
-                <option value="Akademik">Akademik</option>
-                <option value="Administrasi">Administrasi</option>
-                <option value="Umum">Umum</option>
+                {tagOptions && tagOptions.map((tagOption, idx) => (
+                  <option key={idx} value={tagOption.id}>{tagOption.name}</option>
+                ))}
               </select>
             </div>
 
