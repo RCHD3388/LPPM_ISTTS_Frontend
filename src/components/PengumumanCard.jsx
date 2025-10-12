@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import dayjs from "dayjs";
 
 function PengumumanCard({ pengumuman, onClick }) {
   return (
@@ -8,8 +9,9 @@ function PengumumanCard({ pengumuman, onClick }) {
     >
       <div className="card-body p-4">
         <h2 className="card-title text-base">{pengumuman.judul}</h2>
+        <p className="text-base text-sm">{dayjs(pengumuman.tanggal).format("DD MMM YYYY")}</p>
         <p className="line-clamp-2 text-sm text-base-content/70">
-          {pengumuman.isi}
+          {pengumuman.isi.split(" ").slice(0, 10).join(" ")}...
         </p>
         <div className="flex flex-wrap gap-2 mt-2">
           <div className="badge badge-neutral">{pengumuman.tag}</div>

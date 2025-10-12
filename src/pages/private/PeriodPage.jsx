@@ -128,14 +128,14 @@ function PeriodPage() {
     <div>
       <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Periode Management</h1>
+          <h1 className="text-2xl font-bold">Manajemen Data Periode</h1>
           <p className="mt-1 text-sm text-base-content/70">
             Kelola, tambah, edit, dan nonaktifkan periode yang tersedia.
           </p>
         </div>
         <button onClick={handleOpenAddModal} className="btn btn-primary">
           <PlusIcon className="w-5 h-5" />
-          Add New Periode
+          Tambah Periode Baru
         </button>
       </div>
 
@@ -230,15 +230,15 @@ function PeriodPage() {
       {/* --- Modal Add New Periode --- */}
       <dialog ref={addModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Add New Periode</h3>
+          <h3 className="font-bold text-lg">Tambah Periode Baru</h3>
           <div className="py-4">
             <label className="label"><span className="label-text">Periode Name</span></label>
             <input type="text" placeholder="e.g., 2025/2026 GASAL" className="input input-bordered w-full" value={newPeriodeName} onChange={(e) => setNewPeriodeName(e.target.value)} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleAddNewPeriode} className="btn btn-primary ml-2">Save Periode</button>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
+            <button onClick={handleAddNewPeriode} className="btn btn-primary ml-2">Simpan Periode</button>
           </div>
         </div>
       </dialog>
@@ -253,8 +253,8 @@ function PeriodPage() {
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleEditPeriode} className="btn btn-primary ml-2">Save Changes</button>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
+            <button onClick={handleEditPeriode} className="btn btn-primary ml-2">Simpan Perubahan</button>
           </div>
         </div>
       </dialog>
@@ -262,12 +262,12 @@ function PeriodPage() {
       {/* --- Modal Konfirmasi --- */}
       <dialog ref={confirmModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Confirm Action</h3>
+          <h3 className="font-bold text-lg">Konfirmasi</h3>
           <p className="py-4">
             Are you sure you want to {currentPeriode?.status === '1' ? 'deactivate' : 'activate'} the periode "{currentPeriode?.name}"?
           </p>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
             <button onClick={handleToggleStatus} className={`btn ${currentPeriode?.status === '1' ? 'btn-error' : 'btn-success'} ml-2`}>
               Yes, {currentPeriode?.status === '1' ? 'Deactivate' : 'Activate'}
             </button>

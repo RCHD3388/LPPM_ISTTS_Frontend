@@ -132,7 +132,7 @@ const PengumumanDetailPage = () => {
             Apakah Anda yakin ingin menghapus pengumuman <span className="font-bold">{pengumuman ? pengumuman.judul: ""}</span>
           </p>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
             <button onClick={handleDeletePengumuman} className="btn btn-error">
               Hapus
             </button>

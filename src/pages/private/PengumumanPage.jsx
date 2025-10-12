@@ -55,8 +55,6 @@ function PengumumanPage() {
 
     const response = await apiService.post("/pengumuman", formData);
 
-
-
     setPengumumanList([...pengumumanList, response.data]);
     addModalRef.current.close();
   };
@@ -107,7 +105,7 @@ function PengumumanPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Pengumuman Management</h1>
+          <h1 className="text-2xl font-bold">Manajemen Pengumuman</h1>
           <p className="mt-1 text-sm text-base-content/70">
             Kelola, tambah, dan lihat detail pengumuman.
           </p>
@@ -221,10 +219,10 @@ function PengumumanPage() {
 
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn">Cancel</button>
+              <button className="btn">Batalkan</button>
             </form>
             <button onClick={handleSave} className="btn btn-primary">
-              Save
+              Simpan
             </button>
           </div>
         </div>
