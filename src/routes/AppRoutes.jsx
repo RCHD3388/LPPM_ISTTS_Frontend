@@ -32,8 +32,8 @@ const AppRoutes = () => {
           children: [
             { index: true, element: <Navigate to="/dashboard" replace /> },
             { path: "dashboard", element: <LandingPage /> },
-            { path: "author", element: <AuthorListPage/>},
-            { path: "author/:authorId", element: <AuthorPage/>},
+            { path: "authors", element: <AuthorListPage/>},
+            { path: "authors/:authorId", element: <AuthorPage/>},
             { path: "statistic", element: <StatisticPage/>},
             { path: "department", element: <DepartmentListPage/>},
           ],

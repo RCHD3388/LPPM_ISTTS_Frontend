@@ -1,11 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ComboBox from "../../components/Combobox";
 import { Link, useLocation } from "react-router-dom";
+import apiService from "../../utils/services/apiService";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const isAuthorPage = location.pathname.startsWith("/author");
+
+  const [comboBoxItem,setComboBoxItem] = useState([])
+
+  const comboboxHandler = async () => {
+    const result = await apiService.get("/dosen")
+    console.log(result.data);
+    setComboBoxItem(result.data)
+  }
+  useEffect(()=>{
+    if(!isAuthorPage){
+      comboboxHandler()
+    }
+  },[])
+
   return (
     <nav className="bg-base-100 shadow-md fixed w-full z-20 top-0 left-0 text-base-content ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,13 +28,15 @@ const Navbar = () => {
           
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <img src="/lppm.png" alt="Logo" className="h-[7vh] w-auto" />
+            <Link to={"/dashboard"}>
+              <img src="/lppm.png" alt="Logo" className="h-[7vh] w-auto" />
+            </Link>
           </div>
 
           {/* Search Bar (center) */}
           
           <div className="hidden md:flex flex-1 justify-center px-4 max-w-[35vw]">
-            {!isAuthorPage && <ComboBox />}
+            {!isAuthorPage && <ComboBox options={comboBoxItem} />}
           </div>
 
           {/* Right Side */}
@@ -50,10 +67,14 @@ const Navbar = () => {
                   className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
                 >
                   <li>
-                    <a href="#author" className="text-md">Authors</a>
+                    <Link to={"/authors"}>
+                      <span className="text-md">Authors</span>
+                    </Link>
                   </li>
                   <li>
-                    <a href="#statistic" className="text-md">Statistics</a>
+                    <Link to={"/statistic"}>
+                      <span className="text-md">Statistics</span>
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -77,14 +98,14 @@ const Navbar = () => {
         <div className="md:hidden px-4 pb-4 space-y-2 bg-base-100">
           {/* Search Bar in mobile */}
           <div className="w-full">
-            <ComboBox />
+            <ComboBox options={comboBoxItem}/>
           </div>
-          <a href="#" className="block px-2 py-1 rounded hover:bg-base-200">
-            Authors
-          </a>
-          <a href="#" className="block px-2 py-1 rounded hover:bg-base-200">
-            Statistics
-          </a>
+            <Link to={"/authors"}>
+              <span className="text-md">Authors</span>
+            </Link>
+            <Link to={"/statistic"}>
+              <span className="text-md">Statistics</span>
+            </Link>
         </div>
       )}
     </nav>

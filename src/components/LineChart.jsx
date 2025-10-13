@@ -22,13 +22,14 @@ ChartJS.register(
   Legend
 );
 
-export default function LineChart() {
+export default function LineChart({line_data,label}) {
   const [colors, setColors] = useState({
     primary: "#000000",
     secondary: "#000000",
     base: "#000000",
   });
-
+  console.log(line_data);
+  
   // Ambil warna dari CSS variable DaisyUI (custom theme pakai --color-*)
   useEffect(() => {
     const read = () =>
@@ -44,16 +45,17 @@ export default function LineChart() {
   }, []);
 
   // Dummy data
-  const rawData = useMemo(
-    () => [
+  const rawDataDummy = [
       { year: 2019, value: 120 },
       { year: 2020, value: 180 },
       { year: 2021, value: 250 },
       { year: 2022, value: 300 },
       { year: 2023, value: 400 },
-    ],
-    []
-  );
+    ]
+  const rawDataPre = Array.isArray(line_data) && line_data.length > 0 ? line_data : rawDataDummy;
+  // depend on line_data biar update saat props berubah
+  const rawData = useMemo(() => rawDataPre, [line_data]);
+
 
   // Chart data
   const data = useMemo(
@@ -98,7 +100,7 @@ export default function LineChart() {
 
   return (
     <div className="card bg-base-100 shadow p-4">
-      <h2 className="text-lg font-bold text-base-content mb-2">Number of #</h2>
+      <h2 className="text-lg font-bold text-base-content mb-2">{label}</h2>
       <Line data={data} options={options} />
     </div>
   );

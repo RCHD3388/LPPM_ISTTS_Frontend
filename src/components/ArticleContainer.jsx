@@ -1,7 +1,7 @@
 import Article from "./Articles";
 
-export default function ArticleContainer() {
-  const articles = [
+export default function ArticleContainer({articles}) {
+  const dummy_articles = [
     {
       id: 1,
       title: "Deep Learning for Image Recognition",
@@ -33,7 +33,7 @@ export default function ArticleContainer() {
       externalLink: "https://doi.org/10.1016/JMI.2023",
     },
   ];
-
+  articles = articles?articles:dummy_articles
   return (
     <div className="flex flex-col gap-4 w-full m-4 border-1 border-black p-5 rounded-lg max-h-[55vh] overflow-y-auto">
       {articles.map((article) => (

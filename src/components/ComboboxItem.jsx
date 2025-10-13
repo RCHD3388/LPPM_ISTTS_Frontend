@@ -8,7 +8,10 @@ export default function ComboBoxItem({ option, onSelect }) {
       >
         {/* Icon / Initial (optional) */}
         <div className="w-10 h-10 flex items-center justify-center text-lg font-bold bg-secondary text-secondary-content rounded-full">
-          {option.nama_dosen?.charAt(0).toUpperCase()}
+          {option.pp_url && 
+            <img src={option.pp_url} alt="" className="aspect-square max-h-30 rounded-full object-cover" />
+          }
+          {!option.pp_url && option.nama_dosen?.charAt(0).toUpperCase()}
         </div>
 
         {/* Detail */}

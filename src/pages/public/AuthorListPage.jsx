@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import apiService from "../../utils/services/apiService";
 
 export default function AuthorListPage() {
   const [search, setSearch] = useState("");
-
+  const [authors,setAuthors] = useState([])
   // Dummy data
-  const authors = [
+  const authorsDummy = [
     {
       id: 1,
       name: "Dr. Budi Santoso",
@@ -40,15 +41,25 @@ export default function AuthorListPage() {
     },
   ];
 
+  const dosenListHandler = async () => {
+    const result = await apiService.get("/dosen")
+    console.log(result.data);
+    
+    setAuthors(result.data)
+  }
+  useEffect(()=>{
+    setAuthors(authorsDummy)
+    dosenListHandler()
+  },[])
+
   // Filter berdasarkan search
   const filteredAuthors = authors.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      a.institution.toLowerCase().includes(search.toLowerCase())
+    (a) => a.nama_dosen?.toLowerCase().includes(search.toLowerCase())
+  
   );
 
   return (
-    <div className="content mt-12 max-w-[90vw] mx-auto mt-24 h-[80vh]">
+    <div className="content mt-12 max-w-[90vw] mx-auto mt-24 min-h-[80vh]">
       <h1 className="text-3xl font-bold text-primary text-center mb-6">
         Daftar Author
       </h1>
@@ -71,17 +82,14 @@ export default function AuthorListPage() {
             <div key={author.id} className="card bg-base-100 shadow-md p-4">
               <div className="flex items-center gap-4">
                 <img
-                  src={author.photo}
-                  alt={author.name}
+                  src={author.pp_url}
+                  alt={author.nama_dosen}
                   className="w-16 h-16 rounded-full object-cover"
                 />
                 <div>
                   <h2 className="text-lg font-bold text-base-content">
-                    {author.name}
+                    {author.nama_dosen}
                   </h2>
-                  <p className="text-sm text-base-content/70">
-                    {author.institution}
-                  </p>
                 </div>
               </div>
 
@@ -89,13 +97,13 @@ export default function AuthorListPage() {
                 <div className="stat">
                   <div className="stat-title">Overall</div>
                   <div className="stat-value text-primary">
-                    {author.overallSinta}
+                    {author.overall_sinta}
                   </div>
                 </div>
                 <div className="stat">
                   <div className="stat-title">3 Years</div>
                   <div className="stat-value text-secondary">
-                    {author.threeYearSinta}
+                    {author.three_year_score}
                   </div>
                 </div>
               </div>

@@ -11,7 +11,7 @@ import { getCssColor, onThemeChange } from "../utils/themeColors";
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
-export default function PieChart() {
+export default function PieChart({pie_data,label}) {
   const [colors, setColors] = useState({
     primary: "#000",
     secondary: "#000",
@@ -39,16 +39,16 @@ export default function PieChart() {
   }, []);
 
   // dummy data
-  const rawData = useMemo(
-    () => [
+  const rawDataDummy =[
       { label: "No-Q", value: 50 },
       { label: "Q1", value: 100 },
       { label: "Q2", value: 200 },
       { label: "Q3", value: 150 },
       { label: "Q4", value: 80 },
-    ],
-    []
-  );
+  ]
+  const rawDataPre = Array.isArray(pie_data) && pie_data.length > 0 ? pie_data : rawDataDummy;
+  // depend on line_data biar update saat props berubah
+  const rawData = useMemo(() => rawDataPre, [pie_data]);
 
   const data = useMemo(
     () => ({
@@ -57,15 +57,15 @@ export default function PieChart() {
         {
           data: rawData.map((d) => d.value),
           backgroundColor: [
-            "gray",
-            colors.primary,
             colors.secondary,
             colors.accent,
             colors.info,
+            colors.primary,
+            "gray",
           ],
           borderColor: colors.base,
           borderWidth: 1.5, // border tipis
-          borderRadius: 6,  // sudut lebih rapi
+          borderRadius: 3,  // sudut lebih rapi
           offset: (ctx) => (ctx.active ? 15 : 0), // efek pop-up saat hover
         },
       ],
@@ -113,7 +113,7 @@ export default function PieChart() {
 
   return (
     <div className="card bg-base-100 shadow p-4">
-      <h2 className="text-lg font-bold text-base-content mb-2">Artikel Kuartil</h2>
+      <h2 className="text-lg font-bold text-base-content mb-2">{label}</h2>
       <Pie data={data} options={options} />
     </div>
   );

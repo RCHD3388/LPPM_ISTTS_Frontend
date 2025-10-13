@@ -1,177 +1,155 @@
 import PieChart from "../../components/PieChart";
 import LineChart from "../../components/LineChart";
 import ArticleContainer from "../../components/ArticleContainer";
+import { useParams } from "react-router-dom";
+import apiService from "../../utils/services/apiService";
+import { useEffect, useState } from "react";
 
 export default function AuthorPage() {
-  // Dummy data
-  const author = {
-    name: "Yosi Kristian",
-    institution: "Institut Sains dan Teknologi Terpadu Surabaya",
-    program: "S1 - Informatika",
-    sintaId: "169786",
-    overallSinta: 1192,
-    threeYearSinta: 649,
-    photo: "/avatar.jpg",
-    tags: ["Artificial Intelligence", "Machine Learning", "Computer Vision", "Deep Learning"],
+  const { authorId } = useParams();
+  const [dosen, setDosen] = useState(null);
+  const [chart, setChart] = useState({});
+  const [articles, setArticles] = useState([]);
+
+  const fetchDosenHandler = async () => {
+    const result = await apiService.get(`/dosen/${authorId}`);
+    if (!dosen) setDosen(result.data);
   };
 
-  const metrics = {
-    scopus: { article: 30, citation: 103, citedDoc: 23, hIndex: 7, i10Index: 3, gIndex: 1 },
-    gscholar: { article: 97, citation: 387, citedDoc: 64, hIndex: 11, i10Index: 16, gIndex: 1 },
+  const articleHandler = async () => {
+    const result = await apiService.get(`/article/dosen/${authorId}`);
+    setArticles(result.data);
   };
+
+  const fetchChartHandler = async () => {
+    const result = await apiService.get(`/score/dosen/${authorId}`);
+    setChart(result.data);
+  };
+
+  useEffect(() => {
+    fetchDosenHandler();
+    fetchChartHandler();
+    articleHandler();
+  }, []);
 
   return (
-    <div className="content mt-25 lg:max-w-[90vw] max-w-[100vw] mx-auto">
+    <div className="content mt-10 lg:max-w-[90vw] mx-auto mt-24">
       <div className="flex flex-col lg:flex-row gap-6">
-        {/* Kolom kiri */}
+        {/* KIRI */}
         <div className="flex-1">
-          {/* Header */}
-          <div className="card bg-base-100 shadow p-6 flex flex-col md:flex-row gap-6">
+          {/* Profil */}
+          <div className="card bg-base-100 shadow p-6 flex flex-col md:flex-row items-center gap-6">
             <img
-              src={author.photo}
-              alt={author.name}
-              className="w-32 h-32 object-cover rounded-full"
+              src={dosen?.pp_url || ""}
+              alt={dosen?.name || "Dosen"}
+              className="w-32 h-32 object-cover rounded-full border-2 border-primary"
             />
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-primary">{author.name}</h1>
-              <p className="text-base-content">{author.institution}</p>
-              <p className="text-base-content">{author.program}</p>
-              <p className="text-sm text-base-content/70">SINTA ID: {author.sintaId}</p>
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-3xl font-bold text-primary">{dosen?.name}</h1>
+              <p className="text-base-content">
+                Institut Sains dan Teknologi Terpadu Surabaya
+              </p>
+              <p className="text-base-content">{dosen?.program}</p>
+              <p className="text-sm text-base-content/70">
+                SINTA ID: {dosen?.sintaId}
+              </p>
+            </div>
+          </div>
 
-              <div className="mt-3 flex flex-wrap gap-2">
-                {author.tags.map((tag, idx) => (
-                  <span key={idx} className="badge badge-primary badge-outline">
-                    {tag}
-                  </span>
-                ))}
+          {/* Skor */}
+          <div className="stats shadow w-full mt-6">
+            <div className="stat">
+              <div className="stat-figure text-primary text-xl">👤</div>
+              <div className="stat-title">SINTA Score Overall</div>
+              <div className="stat-value text-primary">
+                {dosen?.overall_sinta || 0}
+              </div>
+            </div>
+            <div className="stat">
+              <div className="stat-figure text-secondary text-xl">📊</div>
+              <div className="stat-title">SINTA Score 3Yr</div>
+              <div className="stat-value text-secondary">
+                {dosen?.three_year_score || 0}
               </div>
             </div>
           </div>
 
-          {/* Summary Score */}
-          <div className="stats shadow w-full mt-6">
-            <div className="stat">
-              <div className="stat-figure text-primary">👤</div>
-              <div className="stat-title">SINTA Score Overall</div>
-              <div className="stat-value">{author.overallSinta}</div>
-            </div>
-            <div className="stat">
-              <div className="stat-figure text-secondary">📊</div>
-              <div className="stat-title">SINTA Score 3Yr</div>
-              <div className="stat-value">{author.threeYearSinta}</div>
-            </div>
-          </div>
-            
-            {/* <h2 className="text-lg font-bold mb-2">Summary</h2>
-            <table className="table table-sm shadow shadow-sm">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th className="text-primary">Scopus</th>
-                  <th className="text-secondary">GScholar</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Article</td>
-                  <td>{metrics.scopus.article}</td>
-                  <td>{metrics.gscholar.article}</td>
-                </tr>
-                <tr>
-                  <td>Citation</td>
-                  <td>{metrics.scopus.citation}</td>
-                  <td>{metrics.gscholar.citation}</td>
-                </tr>
-                <tr>
-                  <td>Cited Document</td>
-                  <td>{metrics.scopus.citedDoc}</td>
-                  <td>{metrics.gscholar.citedDoc}</td>
-                </tr>
-                <tr>
-                  <td>H-Index</td>
-                  <td>{metrics.scopus.hIndex}</td>
-                  <td>{metrics.gscholar.hIndex}</td>
-                </tr>
-                <tr>
-                  <td>i10-Index</td>
-                  <td>{metrics.scopus.i10Index}</td>
-                  <td>{metrics.gscholar.i10Index}</td>
-                </tr>
-                <tr>
-                  <td>G-Index</td>
-                  <td>{metrics.scopus.gIndex}</td>
-                  <td>{metrics.gscholar.gIndex}</td>
-                </tr>
-              </tbody>
-            </table> */}
-
-
           {/* Artikel */}
-          <div className="mt-4 me-4">
-            <h2 className="text-2xl font-bold text-primary mb-4 ms-4">Articles</h2>
-            <ArticleContainer />
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-primary mb-4">
+              Scopus Articles
+            </h2>
+
+            {/* Container grid dengan scroll */}
+            <div className="card bg-base-100 shadow p-4 max-h-[540px] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/50 scrollbar-track-base-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {articles.length > 0 ? (
+                  articles.map((article, index) => (
+                    <div
+                      key={index}
+                      className="card bg-base-200 shadow-sm hover:shadow-lg transition p-4"
+                    >
+                      <div className="card-body p-0">
+                        <h3 className="card-title text-base font-bold text-base-content mb-2">
+                          {article.title}
+                        </h3>
+                        <p className="text-sm text-base-content/70 mb-2">
+                          {article.venue} ({article.year})
+                        </p>
+                        <p className="text-sm text-base-content/70">
+                          <span className="font-semibold">Cited:</span>{" "}
+                          {article.cited || 0}
+                        </p>
+                        <p className="text-sm text-base-content/70">
+                          <span className="font-semibold">Quartile:</span>{" "}
+                          {article.quartile || "-"}
+                        </p>
+                        {article.external_link && (
+                          <a
+                            href={article.external_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary mt-2 hover:underline"
+                          >
+                            View on Scopus →
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-base-content/60">
+                    No articles found.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Kolom kanan */}
+        {/* KANAN */}
         <div className="w-full lg:w-[30%] flex flex-col gap-6">
-          {/* Pie Chart */}
-          <div className="card bg-base-100 shadow">
-            {/* <h2 className="text-lg font-bold mb-2">Article Quartile</h2> */}
-            <PieChart />
+          <div className="card bg-base-100 shadow p-4">
+            <PieChart label="Article Quartile" pie_data={chart.quartile} />
           </div>
+          <div className="card bg-base-100 shadow p-4">
+            <PieChart label="Research Output" pie_data={chart.research_output} />
+          </div>
+        </div>
+      </div>
 
-          {/* Line Chart */}
-          <div className="card bg-base-100 shadow">
-            {/* <h2 className="text-lg font-bold mb-2">Research Output</h2> */}
-            <LineChart />
-          </div>
+      <hr className="my-8 border-2 border-secondary" />
 
-          {/* Tabel Ringkasan */}
-          <div className="card bg-base-100 shadow p-4 overflow-x-auto">
-            <h2 className="text-lg font-bold mb-2">Summary</h2>
-            <table className="table table-sm">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th className="text-primary">Scopus</th>
-                  <th className="text-secondary">GScholar</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Article</td>
-                  <td>{metrics.scopus.article}</td>
-                  <td>{metrics.gscholar.article}</td>
-                </tr>
-                <tr>
-                  <td>Citation</td>
-                  <td>{metrics.scopus.citation}</td>
-                  <td>{metrics.gscholar.citation}</td>
-                </tr>
-                <tr>
-                  <td>Cited Document</td>
-                  <td>{metrics.scopus.citedDoc}</td>
-                  <td>{metrics.gscholar.citedDoc}</td>
-                </tr>
-                <tr>
-                  <td>H-Index</td>
-                  <td>{metrics.scopus.hIndex}</td>
-                  <td>{metrics.gscholar.hIndex}</td>
-                </tr>
-                <tr>
-                  <td>i10-Index</td>
-                  <td>{metrics.scopus.i10Index}</td>
-                  <td>{metrics.gscholar.i10Index}</td>
-                </tr>
-                <tr>
-                  <td>G-Index</td>
-                  <td>{metrics.scopus.gIndex}</td>
-                  <td>{metrics.gscholar.gIndex}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+      {/* Line Chart */}
+      <div className="w-full flex flex-wrap justify-center gap-8">
+        <div className="card bg-base-100 shadow p-4 w-full md:w-[30%]">
+          <LineChart label="Jumlah Publikasi Artikel" line_data={chart.article} />
+        </div>
+        <div className="card bg-base-100 shadow p-4 w-full md:w-[30%]">
+          <LineChart label="Jumlah Research" line_data={chart.research} />
+        </div>
+        <div className="card bg-base-100 shadow p-4 w-full md:w-[30%]">
+          <LineChart label="Jumlah Community Services" line_data={chart.service} />
         </div>
       </div>
     </div>

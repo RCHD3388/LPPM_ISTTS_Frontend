@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ComboBoxItem from "./ComboboxItem";
+import { useNavigate } from "react-router-dom";
 
-export default function ComboBox() {
-    const options = [
+export default function ComboBox({options}) {
+    const dummy_options = [
     {
         id: 1,
         nama_dosen: "Dr. Budi Santoso",
@@ -34,10 +35,15 @@ export default function ComboBox() {
         three_year_score: 240,
     },
     ];
-
-
+    options = options?options:dummy_options
   const [query, setQuery] = useState("");
+  const navigate = useNavigate()
   const [selected, setSelected] = useState(null);
+    useEffect(()=>{
+      if(selected){
+        navigate("/authors/"+selected.id)
+      }
+    },[selected])
 
     const filteredOptions = options.filter((opt) =>
     opt.nama_dosen.toLowerCase().includes(query.toLowerCase())
@@ -51,7 +57,7 @@ export default function ComboBox() {
           <input
             type="text"
             placeholder="Search Author"
-            value={selected ? selected.label : query}
+            value={selected ? selected.nama_dosen : query}
             onChange={(e) => {
               setQuery(e.target.value);
               setSelected(null);

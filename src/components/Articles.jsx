@@ -7,7 +7,7 @@ export default function Article({ article }) {
       {/* Tahun & Cite */}
       <div className="flex items-center text-sm text-base-content/70 mb-2">
         <span className="mr-4">📅 {article.year}</span>
-        <span>📖 {article.totalCite} citations</span>
+        <span>📖 {article.cited} citations</span>
       </div>
 
       {/* Venue */}
