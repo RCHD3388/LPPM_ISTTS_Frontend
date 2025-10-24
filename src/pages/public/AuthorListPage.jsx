@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import apiService from "../../utils/services/apiService";
 
 export default function AuthorListPage() {
   const [search, setSearch] = useState("");
   const [authors,setAuthors] = useState([])
+  const [searchParams] = useSearchParams();
   // Dummy data
   const authorsDummy = [
     {
@@ -50,11 +51,16 @@ export default function AuthorListPage() {
   useEffect(()=>{
     setAuthors(authorsDummy)
     dosenListHandler()
+    const query = searchParams.get("query")
+    if(query){
+      setSearch(query)
+    }
   },[])
 
   // Filter berdasarkan search
   const filteredAuthors = authors.filter(
-    (a) => a.nama_dosen?.toLowerCase().includes(search.toLowerCase())
+    (a) => a.nama_dosen?.toLowerCase().includes(search.toLowerCase()) 
+    || a.department?.toLowerCase().includes(search.toLowerCase())
   
   );
 
@@ -89,6 +95,9 @@ export default function AuthorListPage() {
                 <div>
                   <h2 className="text-lg font-bold text-base-content">
                     {author.nama_dosen}
+                  </h2>
+                  <h2 className="text-md font-normal text-base-content">
+                    {author.department}
                   </h2>
                 </div>
               </div>

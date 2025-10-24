@@ -20,6 +20,7 @@ import AuthorListPage from '../pages/public/AuthorListPage';
 import StatisticPage from '../pages/public/StatisticPage';
 import DepartmentListPage from '../pages/public/DepartmenListPage';
 
+
 const AppRoutes = () => {
   const router = createBrowserRouter([
     // Public Route

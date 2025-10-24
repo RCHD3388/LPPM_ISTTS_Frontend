@@ -10,6 +10,8 @@ export default function DepartmentListPage() {
   const deptHandler = async () => {
     const result = await apiService.get("/departement")
     setDept(result.data)
+    console.log(result.data);
+    
   }
   useEffect(()=>{
     deptHandler()
@@ -27,9 +29,16 @@ export default function DepartmentListPage() {
           <Link
             key={dept.id}
             className="bg-base-100 shadow-md rounded-lg p-6 hover:shadow-lg transition flex items-center"
+            to={`/authors?query=${dept.nama}`}
           >
             <img src="/public/istts.png" alt="" className="w-[5vw] me-5"/>
-            <h2 className="text-xl font-bold mb-2">{dept.nama}</h2>
+            <h2 className="text-xl font-bold mb-2">{dept.nama}
+               <div className="text-sm font-normal">Jumlah Author: {dept.jumlah}</div>
+               <div className="grid grid-cols-2 font-normal text-sm gap-2">
+                  <div className="font-semibold">SINTA Overall Score: <span className="text-primary font-bold">{dept.sinta_overall}</span></div>
+                  <div className="font-semibold">SINTA 3 Year Score: <span className="text-primary font-bold">{dept.sinta_3yr}</span></div>
+               </div>
+            </h2>
             {/* <p className="text-sm text-gray-500">
               Jumlah Author: {dept.authors}
             </p>

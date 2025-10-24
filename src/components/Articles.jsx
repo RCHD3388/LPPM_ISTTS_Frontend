@@ -1,4 +1,4 @@
-export default function Article({ article }) {
+export default function Article({ article,view}) {
   return (
     <div className="card bg-base-100 shadow-md p-4 hover:shadow-lg transition">
       {/* Judul */}
@@ -24,10 +24,13 @@ export default function Article({ article }) {
       </p>
 
       {/* Quartile */}
-      <p className="text-sm mb-2">
-        Quartile:{" "}
-        <span className="badge badge-secondary">{article.quartile}</span>
-      </p>
+      {
+        view == "scopus" &&
+        (<p className="text-sm mb-2">
+          Quartile:{" "}
+          <span className="badge badge-secondary">{article.quartile}</span>
+        </p>)
+      }
 
       {/* External link */}
       <div>

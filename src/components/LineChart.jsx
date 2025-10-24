@@ -46,11 +46,11 @@ export default function LineChart({line_data,label}) {
 
   // Dummy data
   const rawDataDummy = [
-      { year: 2019, value: 120 },
-      { year: 2020, value: 180 },
-      { year: 2021, value: 250 },
-      { year: 2022, value: 300 },
-      { year: 2023, value: 400 },
+      { year: 2019, value: 0 },
+      { year: 2020, value: 0 },
+      { year: 2021, value: 0 },
+      { year: 2022, value: 0 },
+      { year: 2023, value: 0 },
     ]
   const rawDataPre = Array.isArray(line_data) && line_data.length > 0 ? line_data : rawDataDummy;
   // depend on line_data biar update saat props berubah

@@ -1,6 +1,6 @@
 import Article from "./Articles";
 
-export default function ArticleContainer({articles}) {
+export default function ArticleContainer({articles,view}) {
   const dummy_articles = [
     {
       id: 1,
@@ -33,11 +33,21 @@ export default function ArticleContainer({articles}) {
       externalLink: "https://doi.org/10.1016/JMI.2023",
     },
   ];
+  console.log("Art C",articles);
+
+  if(view == "scopus"){
+    articles = articles?.scopus
+  }else if(view=="garuda"){
+    articles = articles?.garuda
+  }else if(view == "scholar"){
+    articles = articles?.scholar
+  }
+
   articles = articles?articles:dummy_articles
   return (
-    <div className="flex flex-col gap-4 w-full m-4 border-1 border-black p-5 rounded-lg max-h-[55vh] overflow-y-auto">
+    <div className="flex flex-col gap-4 w-full m-4  p-5 rounded-lg max-h-[100vh] overflow-y-auto">
       {articles.map((article) => (
-        <Article key={article.id} article={article} />
+        <Article key={article.id} article={article} view={view}/>
       ))}
     </div>
   );

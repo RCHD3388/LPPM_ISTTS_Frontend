@@ -5,13 +5,22 @@ import RadarChart from "../../components/RadarChart";
 import apiService from "../../utils/services/apiService";
 import ArticleContainer from "../../components/ArticleContainer";
 import { Link } from "react-router-dom";
+import Research from "../../components/Research";
+import { useSearchParams } from "react-router-dom";
 
 export default function StatisticPage() {
   const [activeTab, setActiveTab] = useState("Articles"); // 🔹 tab aktif
   const [chartData, setChartData] = useState(null);
+  const [graphData,setGraphData] = useState({})
   const [isLoading, setIsLoading] = useState(true);
   const [articles, setArticles] = useState([]);
   const [affilData,setAffilData] = useState(null)
+  const [researches,setResearches] = useState([])
+  const [totalPublication,setTotalPublication]= useState([])
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [articleView,setArticleView] = useState("scopus")
+
+
   // 🔹 Fetch data saat pertama kali atau saat tab berubah
   const fetchStatisticData = async () => {
     try {
@@ -19,6 +28,8 @@ export default function StatisticPage() {
       // Contoh API endpoint (ganti sesuai backend)
       const response = await apiService.get("/score");
       setChartData(response.data);
+      console.log("Chart ",response.data);
+      
     } catch (err) {
       console.error("Failed to fetch statistic data:", err.message);
     } finally {
@@ -28,15 +39,69 @@ export default function StatisticPage() {
   const articleHandler = async () => {
     const result = await apiService.get(`/article`);
     setArticles(result.data);
+    console.log("Article: ",result.data);
+    
     const affil = await apiService.get("/score/affiliate")
     setAffilData(affil.data)
-    console.log(affil.data);
+    console.log("score",affil.data);
+    const research = await apiService.get("/research/")
+    setResearches(research.data)
+    console.log("research",research.data);
+    
     
   };
+
+   const handleGraph = async () => {
+    const response = await apiService.get("/score")
+    console.log(response);
+    setGraphData(response.data)
+    sumPublicationByYear({
+      scopus:response.data.scopus,
+      scholar:response.data.scholar,
+      garuda:response.data.garuda
+    })
+  }
+
+  function sumPublicationByYear(sources) {
+      const totalMap = new Map();
+
+      // Loop setiap sumber (scopus, garuda, scholar)
+      for (const [type, dataArr] of Object.entries(sources)) {
+        if (!Array.isArray(dataArr)) continue;
+        for (const item of dataArr) {
+          const year = String(item.year);
+          const val = Number(item.value) || 0;
+          totalMap.set(year, (totalMap.get(year) || 0) + val);
+        }
+      }
+
+      // Konversi ke array dan urutkan berdasarkan tahun
+      const result = Array.from(totalMap.entries())
+        .map(([year, value]) => ({ year, value }))
+        .sort((a, b) => Number(a.year) - Number(b.year));
+
+      setTotalPublication(result)
+    }
+
+    function updateViewParams (view){
+      if(view == "" || view=="Scopus"){
+        setArticleView("scopus")
+      }else if(view == "Garuda"){
+        setArticleView("garuda")
+      }else if(view == "Google Scholar"){
+        setArticleView("scholar")
+      }
+      const params = new URLSearchParams(searchParams)
+      params.set("view",view)
+      console.log(view);
+      setSearchParams(params)
+    }
 
   useEffect(() => {
     fetchStatisticData();
     articleHandler()
+    handleGraph()
+    sumPublicationByYear
   }, [activeTab]);
 
   // 🔹 Konten berdasarkan tab aktif
@@ -55,7 +120,24 @@ export default function StatisticPage() {
             <h2 className="text-lg font-bold mb-2">
               Latest number of publications (Articles)
             </h2>
-            <LineChart line_data={chartData?.article} label="Articles" />
+            <LineChart line_data={chartData && articleView == "scopus"? chartData.scopus: articleView == "garuda"?chartData.garuda:articleView == "scholar"?chartData.scholar:chartData.scopus} label="" />
+            <div className="flex flex-wrap gap-4 border-b pb-2 my-4 text-normal font-semibold">
+            {["Scopus", "Garuda", "Google Scholar"].map(
+              (tab) => (
+                <button
+                  key={tab}
+                  onClick={() => updateViewParams(tab)}
+                  className={`transition-all duration-200 ${
+                    searchParams.get("view") === tab || (tab == "" && articleView=="scopus")
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-gray-500 hover:text-primary"
+                  }`}
+                >
+                  {tab}
+                </button>
+              )
+            )}
+          </div>
           </>
         );
       case "Researches":
@@ -130,7 +212,7 @@ export default function StatisticPage() {
         <div className="lg:col-span-2 bg-base-100 shadow rounded-lg p-6">
           {/* Tabs */}
           <div className="flex flex-wrap gap-4 border-b pb-2 mb-4 text-sm font-semibold">
-            {["Articles", "Researches", "Community Services", "IPRs"].map(
+            {["Articles", "Researches", "Community Services"].map(
               (tab) => (
                 <button
                   key={tab}
@@ -153,9 +235,18 @@ export default function StatisticPage() {
           {/* Articles list (dummy) */}
           {activeTab === "Articles" && (
             <div className="mt-2 flex justify-center mx-auto">
-              <ArticleContainer articles={articles}/>
+              <ArticleContainer articles={articles} view={articleView}/>
             </div>
           )}
+
+          {activeTab === "Researches" && (
+            <div className="grid gap-4 max-h-[100vh] overflow-y-auto mt-6">
+            {researches.map((r) => (
+              <Research key={r.id} research={r} />
+            ))}
+          </div>
+          )}
+
         </div>
 
         {/* KANAN: Summary */}
@@ -163,12 +254,18 @@ export default function StatisticPage() {
           <h2 className="text-xl font-bold mb-4 text-base-content">Summary</h2>
 
           <div className="flex flex-col gap-6">
+            <div className="">
+              <LineChart label={"Jumlah Publikasi Artikel"} line_data={totalPublication}/>
+            </div>
+            <div className="">
+              <LineChart label={"Jumlah Research"} line_data={graphData.research}/>
+            </div>
             <div>
-              {chartData && <PieChart label="Quartile" pie_data={chartData?.quartile}/>}
+              {chartData && <PieChart label="Scopus Quartile" pie_data={chartData?.quartile}/>}
             </div>
 
             <div>
-              {chartData && <PieChart label="Research Output" pie_data={chartData?.research_output}/>}
+              {chartData && <PieChart label="Scopus Research Output" pie_data={chartData?.research_output}/>}
             </div>
           </div>
         </div>

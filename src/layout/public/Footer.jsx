@@ -20,7 +20,7 @@ export default function Footer() {
         </a>
       </div>
       <div className="mt-2 flex gap-6">
-        <a href="https://facebook.com" target="_blank" rel="noreferrer">
+        {/* <a href="https://facebook.com" target="_blank" rel="noreferrer">
           <i className="fa-brands fa-facebook text-xl">a</i>
         </a>
         <a href="https://twitter.com" target="_blank" rel="noreferrer">
@@ -28,7 +28,7 @@ export default function Footer() {
         </a>
         <a href="https://instagram.com" target="_blank" rel="noreferrer">
           <i className="fa-brands fa-instagram text-xl">a</i>
-        </a>
+        </a> */}
       </div>
     </footer>
   );
