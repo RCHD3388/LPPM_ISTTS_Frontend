@@ -128,7 +128,7 @@ function TagPage() {
     <div>
       <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Manajemen Data Bank</h1>
+          <h1 className="text-2xl font-bold">Manajemen Data Tag</h1>
           <p className="mt-1 text-sm text-base-content/70">
             Kelola, tambah, edit, dan nonaktifkan tag yang tersedia.
           </p>
