@@ -44,16 +44,18 @@ export default function AuthorPage() {
               alt={dosen?.name || "Dosen"}
               className="w-32 h-32 object-cover rounded-full border-2 border-primary"
             />
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-primary">{dosen?.name}</h1>
-              <p className="text-base-content">
-                Institut Sains dan Teknologi Terpadu Surabaya
-              </p>
-              <p className="text-base-content">{dosen?.program}</p>
-              <p className="text-sm text-base-content/70">
-                SINTA ID: {dosen?.sintaId}
-              </p>
-            </div>
+            <a href={"https://sinta.kemdiktisaintek.go.id/authors/profile/"+authorId} target="_blank">
+              <div className="flex-1 text-center md:text-left">
+                <h1 className="text-3xl font-bold text-primary">{dosen?.name}</h1>
+                <p className="text-base-content">
+                  Institut Sains dan Teknologi Terpadu Surabaya
+                </p>
+                <p className="text-base-content">{dosen?.program}</p>
+                <p className="text-sm text-base-content/70">
+                  SINTA ID: {dosen?.sintaId}
+                </p>
+              </div>
+            </a>
           </div>
 
           {/* Skor */}

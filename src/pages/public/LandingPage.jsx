@@ -88,7 +88,7 @@ const LandingPage = () => {
         </div>
             
         {/* Kolom kanan grafik */}
-        <div className="w-[100%] lg:w-[25%] flex flex-wrap lg:flex-col justify-center items-center gap-6 lg:mt-[12vh] lg:bg-primary/30 p-4 rounded-lg mx-2">
+        <div className="w-[100%] h-[91vh] lg:w-[25%] flex lg:flex-col items-center gap-6 lg:mt-[12vh] lg:bg-primary/30 px-4 py-10 rounded-lg mx-2">
           <div className="grid grid-cols-2 gap-4">
               <StatCard title="SINTA Score" value={affilData && affilData.overall_score?affilData.overall_score:"20.092"} />
               <StatCard title="SINTA 3Year" value={affilData && affilData.three_year?affilData.three_year:"9.213"} />
