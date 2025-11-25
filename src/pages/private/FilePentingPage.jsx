@@ -122,7 +122,7 @@ function FilePentingPage() {
       {/* Header */}
       <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">File Penting Management</h1>
+          <h1 className="text-2xl font-bold">Manajemen File Penting</h1>
           <p className="mt-1 text-sm text-base-content/70">
             Kelola, tambah, dan perbarui data file penting yang tersedia.
           </p>
@@ -130,7 +130,7 @@ function FilePentingPage() {
         {/* Add New */}
         <button onClick={handleOpenAddModal} className="btn btn-primary">
           <PlusIcon className="w-5 h-5" />
-          Add New File Penting
+          Tambah File Penting
         </button>
 
       </div>
@@ -191,7 +191,7 @@ function FilePentingPage() {
       {/* Modal Add File Penting */}
       <dialog ref={addModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Add New File Penting</h3>
+          <h3 className="font-bold text-lg">Tambah File Penting</h3>
           <div className="space-y-3 mt-3">
             {/* Title */}
             <div>
@@ -245,10 +245,10 @@ function FilePentingPage() {
           {/* Action */}
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn">Cancel</button>
+              <button className="btn">Batalkan</button>
             </form>
             <button onClick={handleSaveFile} className="btn btn-primary">
-              Save
+              Simpan
             </button>
           </div>
         </div>

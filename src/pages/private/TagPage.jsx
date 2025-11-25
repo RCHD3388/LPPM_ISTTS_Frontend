@@ -128,14 +128,14 @@ function TagPage() {
     <div>
       <div className="flex justify-between items-center mb-6 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Tag Management</h1>
+          <h1 className="text-2xl font-bold">Manajemen Data Tag</h1>
           <p className="mt-1 text-sm text-base-content/70">
             Kelola, tambah, edit, dan nonaktifkan tag yang tersedia.
           </p>
         </div>
         <button onClick={handleOpenAddModal} className="btn btn-primary">
           <PlusIcon className="w-5 h-5" />
-          Add New Tag
+          Tambah Tag Baru
         </button>
       </div>
 
@@ -152,7 +152,7 @@ function TagPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button className="btn btn-primary ml-2" onClick={() => { setPage(1); fetchTags(); }}>
-                Search
+                Cari Tag
               </button>
             </div>
 
@@ -182,9 +182,9 @@ function TagPage() {
                 <thead className='sticky top-0 bg-base-200'>
                   <tr>
                     <th>#</th>
-                    <th>Tag Name</th>
+                    <th>Nama Tag</th>
                     <th>Status</th>
-                    <th className="text-center">Actions</th>
+                    <th className="text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -230,15 +230,15 @@ function TagPage() {
       {/* --- Modal Add New Tag --- */}
       <dialog ref={addModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Add New Tag</h3>
+          <h3 className="font-bold text-lg">Tambah Tag Baru</h3>
           <div className="py-4">
-            <label className="label"><span className="label-text">Tag Name</span></label>
+            <label className="label"><span className="label-text">Nama Tag</span></label>
             <input type="text" placeholder="e.g., Jurnal SINTA 2" className="input input-bordered w-full" value={newTagName} onChange={(e) => setNewTagName(e.target.value)} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleAddNewTag} className="btn btn-primary ml-2">Save Tag</button>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
+            <button onClick={handleAddNewTag} className="btn btn-primary ml-2">Simpan Tag</button>
           </div>
         </div>
       </dialog>
@@ -246,15 +246,15 @@ function TagPage() {
       {/* --- Modal Edit Tag --- */}
       <dialog ref={editModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Edit Tag</h3>
+          <h3 className="font-bold text-lg">Ubah Tag</h3>
           <div className="py-4">
-            <label className="label"><span className="label-text">Tag Name</span></label>
+            <label className="label"><span className="label-text">Nama Tag</span></label>
             <input type="text" className="input input-bordered w-full" value={currentTag?.name || ''} onChange={(e) => setCurrentTag({ ...currentTag, name: e.target.value })} />
             {postError && postError !== "" && <span className='text-error'>{postError}</span>}
           </div>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
-            <button onClick={handleEditTag} className="btn btn-primary ml-2">Save Changes</button>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
+            <button onClick={handleEditTag} className="btn btn-primary ml-2">Simpan Perubahan</button>
           </div>
         </div>
       </dialog>
@@ -262,12 +262,12 @@ function TagPage() {
       {/* --- Modal Konfirmasi --- */}
       <dialog ref={confirmModalRef} className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Confirm Action</h3>
+          <h3 className="font-bold text-lg">Konfirmasi</h3>
           <p className="py-4">
-            Are you sure you want to {currentTag?.status === '1' ? 'deactivate' : 'activate'} the tag "{currentTag?.name}"?
+            Apakah anda yakin untuk {currentTag?.status === '1' ? 'deactivate' : 'activate'} tag <span className='font-semibold'>"{currentTag?.name}"</span>?
           </p>
           <div className="modal-action">
-            <form method="dialog"><button className="btn">Cancel</button></form>
+            <form method="dialog"><button className="btn">Batalkan</button></form>
             <button onClick={handleToggleStatus} className={`btn ${currentTag?.status === '1' ? 'btn-error' : 'btn-success'} ml-2`}>
               Yes, {currentTag?.status === '1' ? 'Deactivate' : 'Activate'}
             </button>

@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { LinkIcon, PaperClipIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-function AttachmentInput({ value, onChange }) {
-  const [type, setType] = useState(value?.type || null);
+function AttachmentInput({ value, value_type = null, onChange }) {
+  const [type, setType] = useState(value_type || null);
 
   const handleLinkChange = (e) => {
     onChange({ type: "link", url: e.target.value });
@@ -68,9 +68,10 @@ function AttachmentInput({ value, onChange }) {
             onChange={handleFileChange}
           />
           {value?.file && <span className="text-xs truncate">{value.file.name}</span>}
-          <button type="button" onClick={handleRemove} className="btn btn-ghost btn-sm">
+
+          {value_type == null && <button type="button" onClick={handleRemove} className="btn btn-ghost btn-sm">
             <XMarkIcon className="w-5 h-5" />
-          </button>
+          </button>}
         </div>
       )}
     </div>

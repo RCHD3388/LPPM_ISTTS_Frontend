@@ -1,7 +1,7 @@
 // src/layout/Sidebar.jsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { HomeIcon, TagIcon, CalendarDaysIcon, CreditCardIcon, DocumentCheckIcon, MegaphoneIcon, DocumentChartBarIcon, DocumentIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
+import { HomeIcon, TagIcon, CalendarDaysIcon, Cog6ToothIcon, CreditCardIcon, DocumentCheckIcon, MegaphoneIcon, DocumentChartBarIcon, DocumentIcon, AcademicCapIcon } from '@heroicons/react/24/outline';
 
 function Sidebar() {
   const commonClasses = "flex items-center gap-2 rounded-lg px-4 py-2";
@@ -12,19 +12,10 @@ function Sidebar() {
     // Struktur ul ini akan dimasukkan ke dalam .drawer-side
     <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
       <li className="text-xl font-bold p-4">
-        Admin Panel
+        Admin LPPM Panel
       </li>
       {/* Tambahkan spasi atau border di bawah judul jika perlu */}
       <li className="menu-title">Menu</li>
-      <li>
-        <NavLink
-          to="/app/dashboard"
-          className={({ isActive }) => `${commonClasses} ${isActive ? activeClass : inactiveClass}`}
-        >
-          <HomeIcon className="w-5 h-5" />
-          Dashboard
-        </NavLink>
-      </li>
       <li>
         <NavLink
           to="/app/tag"
@@ -93,6 +84,14 @@ function Sidebar() {
           {/* --- Perubahan di sini: Gunakan CalendarDaysIcon --- */}
           <DocumentChartBarIcon className="w-5 h-5" />
           Laporan
+        </NavLink>
+        <NavLink
+          to="/app/setting"
+          className={({ isActive }) => `${commonClasses} ${isActive ? activeClass : inactiveClass}`}
+        >
+          {/* --- Perubahan di sini: Gunakan CalendarDaysIcon --- */}
+          <Cog6ToothIcon className="w-5 h-5" />
+          Setting
         </NavLink>
       </li>
     </ul>

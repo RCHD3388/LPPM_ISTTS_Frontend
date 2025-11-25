@@ -4,17 +4,18 @@ import LoginPage from '../pages/private/LoginPage';
 import PublicRoutes from './PublicRoutes';
 import PrivateRoutes from './PrivateRoutes';
 import MainLayout from '../layout/private/MainLayout';
-import DashboardPage from '../pages/private/DashboardPage';
 import TagPage from '../pages/private/TagPage';
 import PeriodPage from '../pages/private/PeriodPage';
 import BankPage from '../pages/private/BankPage';
 import MainLayoutPublic from '../layout/public/MainLayout';
 import FilePentingPage from '../pages/private/FilePentingPage';
 import PengumumanPage from '../pages/private/PengumumanPage';
-import LaporanPage from '../pages/private/Laporan';
+import LaporanPage from '../pages/private/LaporanPage';
 import ProposalPage from '../pages/private/ProposalPage';
-import DosenPage from '../pages/private/Dosen';
+import DosenPage from '../pages/private/DosenPage';
 import PengumumanDetailPage from '../pages/private/PengumumanDetailPage';
+import SettingPage from '../pages/private/SettingPage';
+import ProfilePage from '../pages/private/ProfilePage';
 import AuthorPage from '../pages/public/AuthorPage';
 import AuthorListPage from '../pages/public/AuthorListPage';
 import StatisticPage from '../pages/public/StatisticPage';
@@ -54,8 +55,7 @@ const AppRoutes = () => {
           // Halaman-halaman admin menjadi anak dari MainLayout
           children: [
             // Redirect dari /app ke /app/dashboard
-            { index: true, element: <Navigate to="/app/dashboard" replace /> },
-            { path: "dashboard", element: <DashboardPage /> },
+            { index: true, element: <Navigate to="/app/proposal" replace /> },
             { path: "tag", element: <TagPage /> },
             { path: "periode", element: <PeriodPage /> },
             { path: "bank", element: <BankPage /> },
@@ -65,6 +65,8 @@ const AppRoutes = () => {
             { path: "dosen", element: <DosenPage /> },
             { path: "proposal", element: <ProposalPage /> },
             { path: "laporan", element: <LaporanPage /> },
+            { path: "setting", element: <SettingPage /> },
+            { path: "profile", element: <ProfilePage /> },
           ]
         }
       ]
