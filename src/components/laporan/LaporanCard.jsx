@@ -1,32 +1,28 @@
 import dayjs from "dayjs";
+import { STATUS_PROPOSAL_LAPORAN_BADGE } from "./../../utils/constants/constant";
 
-function LaporanCard({ laporan, proposal, onClick = () => { } }) {
+function LaporanCard({ laporan, proposal, onDetail = () => { } }) {
 
   return (
     <div
       key={laporan.id}
-      className="card bg-base-100 shadow-sm border hover:shadow-md cursor-pointer"
-      onClick={onClick}
+      className="card card-compact bg-base-100 shadow-md hover:shadow-lg transition cursor-pointer"
+      onClick={onDetail}
     >
-      <div className="card-body p-4">
-        <div className="flex justify-between items-center">
-          <h3 className="font-semibold">{proposal.title}</h3>
+      <div className="card-body p-3">
+        <div className="flex justify-between items-center ">
+          <h1 className="font-semibold text-lg mr-2">{proposal.judul}</h1>
           <span
-            className={`badge ${laporan.status === "Menunggu"
-              ? "badge-warning"
-              : laporan.status === "Ditolak"
-                ? "badge-error"
-                : "badge-success"
-              }`}
+            className={`badge ${STATUS_PROPOSAL_LAPORAN_BADGE[laporan.status].color}`}
           >
-            {laporan.status}
+            {STATUS_PROPOSAL_LAPORAN_BADGE[laporan.status].text}
           </span>
         </div>
         <p className="text-sm text-base-content/70">
-          {proposal.jenis} • {proposal.periode}
+          {proposal.jenis} • {proposal.periode.name}
         </p>
         <p className="text-xs mt-1">
-          {dayjs(laporan.tanggal).format("DD MMM YYYY")}
+          {dayjs(laporan.date).format("DD MMM YYYY")}
         </p>
       </div>
     </div>

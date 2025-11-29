@@ -9,9 +9,11 @@ import FileCard from "../../components/FileCard";
 import apiService from "../../utils/services/apiService";
 import { useEffect } from "react";
 import PaginationController from "../../components/PaginationController";
+import { useToast } from "../../context/ToastContext";
 
 function FilePentingPage() {
   const addModalRef = useRef(null);
+  const {addToast} = useToast();
 
   const [tagOptions, setTagOptions] = useState([]);
   const [postTitleError, setPostTitleError] = useState("");
@@ -87,6 +89,7 @@ function FilePentingPage() {
     setFiles((prev) => [newData, ...prev])
 
     handleOpenAddModal();
+    addToast("File penting berhasil dibuat", "success")
     addModalRef.current.close();
   };
 

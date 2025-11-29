@@ -93,7 +93,7 @@ function ProposalCard({ proposal, page = "proposal", onClick, onReview }) {
         <p className="text-xs text-base-content/60 mt-1">
           Diupload pada {new Date(proposal.date).toLocaleDateString("id-ID")}
         </p>
-        {page == "laporan" && isNeedReview() &&
+        {page == "laporan" && isNeedReview() && user.role_id == 2 &&
           <button onClick={onReview} className="btn btn-base btn-outline btn-sm">Review</button>
         }
         {page == "laporan" && !isNeedReview() && isContributor() &&

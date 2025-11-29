@@ -5,9 +5,11 @@ import PengumumanCard from "../../components/PengumumanCard";
 import AttachmentInputMultiple from "../../components/AttachmentInputMultiple";
 import { useEffect } from "react";
 import apiService from "../../utils/services/apiService";
+import { useToast } from "../../context/ToastContext";
 
 function PengumumanPage() {
   const addModalRef = useRef(null);
+  const {addToast} = useToast();
 
   const [tagOptions, setTagOptions] = useState([]);
   const [title, setTitle] = useState("");
@@ -52,10 +54,10 @@ function PengumumanPage() {
         formData.append("links", attachment.value);
       }
     });
-
+    addToast("Berhasil membuat pengumuman", "success");
     const response = await apiService.post("/pengumuman", formData);
 
-    setPengumumanList([...pengumumanList, response.data]);
+    fetchPengumuman();
     addModalRef.current.close();
   };
 

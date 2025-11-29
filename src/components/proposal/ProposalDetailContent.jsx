@@ -104,48 +104,50 @@ function ProposalDetailContent({ proposal }) {
       </div>
 
       {/* RIWAYAT LAPORAN */}
-      <div className="card  bg-base-100 border border-base-200 mt-4">
-        <div className="card-body p-4">
-          <h4 className="card-title text-base mb-2">Riwayat Laporan</h4>
-          {proposal.laporan && proposal.laporan.length > 0 ? (
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-              {proposal.laporan.map((laporan, index) => {
-                const statusInfo = getStatusLaporan(laporan.status);
-                // Asumsi backend mengembalikan `createdAt` atau `date`
-                const tglLaporan = laporan.createdAt || laporan.date;
+      {false && (
+        <div className="card  bg-base-100 border border-base-200 mt-4">
+          <div className="card-body p-4">
+            <h4 className="card-title text-base mb-2">Riwayat Laporan</h4>
+            {proposal.laporan && proposal.laporan.length > 0 ? (
+              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
+                {proposal.laporan.map((laporan, index) => {
+                  const statusInfo = getStatusLaporan(laporan.status);
+                  // Asumsi backend mengembalikan `createdAt` atau `date`
+                  const tglLaporan = laporan.createdAt || laporan.date;
 
-                return (
-                  <div key={laporan.id || index} className="flex justify-between items-center p-2 bg-base-200 rounded-md">
-                    {/* Sisi Kiri: Informasi */}
-                    <div className="flex items-center gap-3">
-                      <span className={`badge ${statusInfo.color}`}>{statusInfo.text}</span>
-                      {tglLaporan && (
-                        <div className="flex items-center gap-1 text-xs text-base-content/70">
-                          <CalendarDaysIcon className="w-4 h-4" />
-                          <span>
-                            {new Date(tglLaporan).toLocaleDateString('id-ID', {
-                              year: 'numeric', month: 'long', day: 'numeric'
-                            })}
-                          </span>
-                        </div>
-                      )}
+                  return (
+                    <div key={laporan.id || index} className="flex justify-between items-center p-2 bg-base-200 rounded-md">
+                      {/* Sisi Kiri: Informasi */}
+                      <div className="flex items-center gap-3">
+                        <span className={`badge ${statusInfo.color}`}>{statusInfo.text}</span>
+                        {tglLaporan && (
+                          <div className="flex items-center gap-1 text-xs text-base-content/70">
+                            <CalendarDaysIcon className="w-4 h-4" />
+                            <span>
+                              {new Date(tglLaporan).toLocaleDateString('id-ID', {
+                                year: 'numeric', month: 'long', day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      {/* Sisi Kanan: Aksi */}
+                      <button
+                        className="btn btn-sm btn-ghost"
+                        onClick={() => alert(`Lihat detail laporan ID: ${laporan.id}`)}
+                      >
+                        Lihat Detail
+                      </button>
                     </div>
-                    {/* Sisi Kanan: Aksi */}
-                    <button
-                      className="btn btn-sm btn-ghost"
-                      onClick={() => alert(`Lihat detail laporan ID: ${laporan.id}`)}
-                    >
-                      Lihat Detail
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-sm text-base-content/60 italic">Belum ada laporan yang diunggah.</p>
-          )}
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-sm text-base-content/60 italic">Belum ada laporan yang diunggah.</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

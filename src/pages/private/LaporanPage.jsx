@@ -11,6 +11,7 @@ import { useToast } from "../../context/ToastContext";
 import apiService from "../../utils/services/apiService";
 import { onDownloadServerFile } from "../../utils/services/fileApi";
 import { isMenunggu, TIPE_PERSETUJUAN,  STATUS_PROPOSAL_LAPORAN_BADGE } from "../../utils/constants/constant";
+import LaporanRiwayatTabPage from "./LaporanRiwayatTabPage";
  
 
 function LaporanPage() {
@@ -146,16 +147,8 @@ function LaporanPage() {
 
       {/* Tab: Riwayat laporan (semua role) */}
       {activeTab === "riwayat" && (
-        <div className="grid gap-3 mt-4">
-          {laporanDosen.length === 0 && (
-            <p className="text-sm text-base-content/70">Belum ada laporan yang diupload.</p>
-          )}
-          {laporanDosen.map((lap) => {
-            const proposal = proposals.find((p) => p.id === lap.proposalId);
-            return (
-              <LaporanCard laporan={lap} proposal={proposal} key={lap.id} onClick={() => setSelectedLaporan(lap)} />
-            );
-          })}
+        <div className="">
+          <LaporanRiwayatTabPage/>
         </div>
       )}
 

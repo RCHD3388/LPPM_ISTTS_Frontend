@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TrashIcon, PlusIcon, GlobeAltIcon, EnvelopeIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import apiService from "../../utils/services/apiService";
+import { useToast } from "../../context/ToastContext";
 
 function SettingPage() {
   // contoh data awal
+  const {addToast} = useToast()
   const [mailingList, setMailingList] = useState([
     "lppm@universitas.ac.id",
     "penelitian@universitas.ac.id",
@@ -14,27 +17,42 @@ function SettingPage() {
   const [newMail, setNewMail] = useState("");
   const [newUrl, setNewUrl] = useState("");
 
-  const handleAddMail = () => {
-    if (newMail.trim() && !mailingList.includes(newMail)) {
-      setMailingList([...mailingList, newMail]);
-      setNewMail("");
+  const fetchMailingList = async () => {
+    try {
+      const response = await apiService.get("/milis");
+      setMailingList(response.data);
+    } catch (error) {
+
+    }
+  }
+
+  const handleAddMail = async () => {
+    try {
+      if(newMail === "") {
+        addToast("Email tidak boleh kosong", "error")
+        return
+      }
+      const response = await apiService.post(`/milis/`, { nama: newMail })
+      addToast("Email berhasil ditambahkan", "success")
+      fetchMailingList()
+    } catch (error) {
+      addToast("Gagal menambahkan email", "error")
     }
   };
 
-  const handleAddUrl = () => {
-    if (newUrl.trim() && !crawlUrls.includes(newUrl)) {
-      setCrawlUrls([...crawlUrls, newUrl]);
-      setNewUrl("");
+  const handleDeleteMail = async (idemail) => {
+    try {
+      const response = await apiService.delete(`/milis/${idemail}`)
+      addToast("Email berhasil dihapus", "success")
+      fetchMailingList()
+    } catch (error) {
+      addToast("Gagal menghapus email", "error")
     }
   };
 
-  const handleDeleteMail = (email) => {
-    setMailingList(mailingList.filter((m) => m !== email));
-  };
-
-  const handleDeleteUrl = (url) => {
-    setCrawlUrls(crawlUrls.filter((u) => u !== url));
-  };
+  useEffect(() => {
+    fetchMailingList()
+  }, [])
 
   const handleUpdateData = () => {
     alert("Data publik LPPM berhasil diperbarui!");
@@ -54,7 +72,7 @@ function SettingPage() {
         </div>
 
         {/* Mailing List Section */}
-        <div className="card bg-base-200 shadow-md mb-6">
+        <div className="card bg-base-100 shadow-md mb-6">
           <div className="card-body">
             <div className="flex items-center gap-2 mb-4">
               <EnvelopeIcon className="w-6 h-6 text-primary" />
@@ -81,57 +99,9 @@ function SettingPage() {
                   key={i}
                   className="flex justify-between items-center bg-base-100 rounded-lg p-3 shadow-sm"
                 >
-                  <span className="truncate text-sm">{mail}</span>
+                  <span className="truncate text-sm">{mail.nama}</span>
                   <button
-                    onClick={() => handleDeleteMail(mail)}
-                    className="btn btn-ghost btn-sm text-error"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Crawl URL Section */}
-        <div className="card bg-base-200 shadow-md mb-6">
-          <div className="card-body">
-            <div className="flex items-center gap-2 mb-4">
-              <GlobeAltIcon className="w-6 h-6 text-primary" />
-              <h2 className="text-lg font-semibold">URL untuk Crawl</h2>
-            </div>
-
-            <div className="flex gap-2 mb-4">
-              <input
-                type="url"
-                placeholder="Tambahkan URL baru"
-                className="input input-bordered w-full"
-                value={newUrl}
-                onChange={(e) => setNewUrl(e.target.value)}
-              />
-              <button onClick={handleAddUrl} className="btn btn-primary">
-                <PlusIcon className="w-5 h-5" />
-                Tambah
-              </button>
-            </div>
-
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {crawlUrls.map((url, i) => (
-                <div
-                  key={i}
-                  className="flex justify-between items-center bg-base-100 rounded-lg p-3 shadow-sm"
-                >
-                  <a
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="truncate text-sm text-primary underline"
-                  >
-                    {url}
-                  </a>
-                  <button
-                    onClick={() => handleDeleteUrl(url)}
+                    onClick={() => handleDeleteMail(mail.id)}
                     className="btn btn-ghost btn-sm text-error"
                   >
                     <TrashIcon className="w-4 h-4" />
