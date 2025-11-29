@@ -67,7 +67,6 @@ function AttachmentInput({ value, value_type = null, onChange }) {
             className="file-input file-input-bordered file-input-sm w-full"
             onChange={handleFileChange}
           />
-          {value?.file && <span className="text-xs truncate">{value.file.name}</span>}
 
           {value_type == null && <button type="button" onClick={handleRemove} className="btn btn-ghost btn-sm">
             <XMarkIcon className="w-5 h-5" />

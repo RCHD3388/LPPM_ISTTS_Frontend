@@ -1,13 +1,14 @@
 // src/context/ToastContext.jsx
 import React, { createContext, useContext, useState, useCallback } from "react";
 
+
 const ToastContext = createContext();
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
   const addToast = useCallback((message, type = "success") => {
-    const id = Date.now();
+    const id = crypto.randomUUID();
     setToasts((prev) => [...prev, { id, message, type }]);
 
     // Auto remove setelah 3 detik

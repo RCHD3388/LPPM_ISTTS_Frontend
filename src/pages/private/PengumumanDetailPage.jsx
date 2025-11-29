@@ -2,7 +2,7 @@ import { ArrowLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../utils/services/apiService";
-import fileApi from "../../utils/services/fileApi";
+import { fileApi } from "../../utils/services/fileApi";
 
 const PengumumanDetailPage = () => {
   const [pengumuman, setPengumuman] = useState(null);
@@ -34,9 +34,10 @@ const PengumumanDetailPage = () => {
     }
   }
 
-  const onDownloadServerFile = (lampiranId) => async () => {
+  const onDownloadServerFile = (sumberLampiran) => async () => {
     try {
-      const response = await fileApi.get(`/download/${lampiranId}`, {
+      const response = await fileApi.get(`/download`, {
+        params: { id: sumberLampiran },
         responseType: 'blob',
         // Penting: jangan biarkan Axios parse sebagai JSON/text
       });
@@ -46,7 +47,7 @@ const PengumumanDetailPage = () => {
       const contentDisposition = response.headers['content-disposition'];
 
       // Ekstrak filename dari header (opsional tapi bagus)
-      let fileName = `lampiran_${lampiranId}`;
+      let fileName = `lampiran_pengumuman`;
       if (contentDisposition) {
         const match = contentDisposition.match(/filename\*=UTF-8''(.+)/i);
         if (match) {
@@ -106,7 +107,7 @@ const PengumumanDetailPage = () => {
             <div key={idx} className="flex items-center gap-2 p-2 border rounded-md">
               {att.jenis_lampiran === "file" ? (
                 <div onClick={
-                  onDownloadServerFile(att.id)
+                  onDownloadServerFile(att.sumber_lampiran)
                 }>
                   📄 <span className="link link-primary">{att.name_lampiran}</span>
                 </div>

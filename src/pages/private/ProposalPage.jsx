@@ -139,7 +139,8 @@ function ProposalPage() {
         open={!!selectedProposal}
         onClose={() => setSelectedProposal(null)}
         proposal={selectedProposal}
-        userRole={user.role}
+        userRole={user.role_id}
+        onSuccess={fetchProposals}
       />
     </div>
   );

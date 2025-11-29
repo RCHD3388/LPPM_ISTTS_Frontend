@@ -1,15 +1,17 @@
 import { LinkIcon, PaperClipIcon } from "@heroicons/react/24/outline";
-import fileApi from "../utils/services/fileApi";
+import {fileApi} from "../utils/services/fileApi";
 
 const FileCard = ({ file, viewMode }) => {
 
   const accessOnClick = async () => {
+    console.log(file)
     if (file.jenis_lampiran === "link") {
       window.open(file.value, '_blank', 'noopener,noreferrer');
     } else if (file.jenis_lampiran === "file") {
       try {
         // ✅ Pakai fileApi, BUKAN apiService
-        const response = await fileApi.get(`/download/${file.id}`, {
+        const response = await fileApi.get(`/download`, {
+          params: { id: file.value },
           responseType: 'blob'
         });
 

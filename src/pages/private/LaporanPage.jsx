@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PlusIcon, CheckIcon, XMarkIcon, PaperClipIcon } from "@heroicons/react/24/outline";
 import dayjs from "dayjs";
 import ProposalCard from "../../components/proposal/ProposalCard";
@@ -6,205 +6,99 @@ import ProposalDetailModal from "../../components/proposal/ProposalDetailModal";
 import ProposalDetailForUploadModal from "../../components/laporan/ProposalDetailForUploadModal";
 import ProposalDetailContent from "../../components/proposal/ProposalDetailContent";
 import LaporanCard from "../../components/laporan/LaporanCard";
+import LocalStorageService from "../../utils/services/LocalStorageService";
+import { useToast } from "../../context/ToastContext";
+import apiService from "../../utils/services/apiService";
+import { onDownloadServerFile } from "../../utils/services/fileApi";
+import { isMenunggu, TIPE_PERSETUJUAN,  STATUS_PROPOSAL_LAPORAN_BADGE } from "../../utils/constants/constant";
+ 
 
-function LaporanPage({ userRole = "ketua" }) {
-  const [activeTab, setActiveTab] = useState(userRole === "ketua" ? "semua" : "upload");
+function LaporanPage() {
+  const { addToast } = useToast();
+  const user = LocalStorageService.getItem("app_user");
+
+  const [activeTab, setActiveTab] = useState("upload");
   const [selectedLaporan, setSelectedLaporan] = useState(null);
   const [selectedProposal, setSelectedProposal] = useState(null);
 
-  // contoh data proposal
-  const [proposals] = useState([
-    {
-      id: 1,
-      title: "Sistem Monitoring Air Otomatis Berbasis Sensor",
-      jenis: "Penelitian",
-      periode: "2025/2026",
-      tag: "Teknologi",
-      contributors: ["Grace Levina Dewi, S.Kom., M.Kom."],
-      danaDiajukan: 30000000,
-      danaDisetujui: 28000000,
-      perluLaporan: true,
-      lampiranKetua: "/sk_monitoring_air.pdf",
-      date: new Date("2025-08-15"),
-      status: "Disetujui + Laporan",
-      fileUrl: "/proposal_monitoring.pdf",
-    },
-    {
-      id: 2,
-      title: "Pelatihan Literasi Keuangan untuk Ibu Rumah Tangga",
-      jenis: "Pengabdian",
-      periode: "2025/2026",
-      tag: "Ekonomi",
-      contributors: ["Dr. Ir. Hartarto Junaedi, S.Kom., M.Kom., IPM., ASEAN Eng."],
-      danaDiajukan: 15000000,
-      danaDisetujui: 15000000,
-      perluLaporan: true,
-      lampiranKetua: "/sk_literasi_keuangan.pdf",
-      date: new Date("2025-08-20"),
-      status: "Disetujui + Laporan",
-      fileUrl: "/proposal_literasi.pdf",
-    },
-    {
-      id: 3,
-      title: "Pengembangan Model Prediksi Mutu Kopi Berbasis Citra Digital",
-      jenis: "Penelitian",
-      periode: "2024/2025",
-      tag: "Pertanian",
-      contributors: ["Grace Levina Dewi, S.Kom., M.Kom.", "Dr. Ir. Hartarto Junaedi, S.Kom., M.Kom., IPM., ASEAN Eng."],
-      danaDiajukan: 50000000,
-      danaDisetujui: 45000000,
-      perluLaporan: true,
-      lampiranKetua: "/sk_mutu_kopi.pdf",
-      date: new Date("2025-09-01"),
-      status: "Disetujui + Laporan",
-      fileUrl: "/proposal_kopi.pdf",
-    },
-    {
-      id: 4,
-      title: "Sosialisasi Bahaya Stunting dan Gizi Seimbang di Desa Binaan",
-      jenis: "Pengabdian",
-      periode: "2025/2026",
-      tag: "Kesehatan",
-      contributors: ["Grace Levina Dewi, S.Kom., M.Kom."],
-      danaDiajukan: 10000000,
-      danaDisetujui: 9500000,
-      perluLaporan: true,
-      lampiranKetua: "/sk_sosialisasi_gizi.pdf",
-      date: new Date("2025-09-05"),
-      status: "Disetujui + Laporan",
-      fileUrl: "/proposal_stunting.pdf",
-    },
-    {
-      id: 5,
-      title: "Analisis Sentimen Media Sosial Terhadap Kebijakan Publik",
-      jenis: "Penelitian",
-      periode: "2024/2025",
-      tag: "Data Science",
-      contributors: ["Dr. Ir. Hartarto Junaedi, S.Kom., M.Kom., IPM., ASEAN Eng."],
-      danaDiajukan: 35000000,
-      danaDisetujui: 35000000,
-      perluLaporan: true,
-      lampiranKetua: "/sk_sentimen_media.pdf",
-      date: new Date("2025-09-10"),
-      status: "Disetujui + Laporan",
-      fileUrl: "/proposal_sentimen.pdf",
-    },
-  ]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // contoh data laporan
-  const [laporans, setLaporans] = useState([
-    // 5 Laporan pertama (masing-masing 1 proposal)
-    {
-      id: 1,
-      lampiran: "/laporan-air-v1.pdf",
-      pesan: "Laporan kemajuan tahap 1 telah diajukan. Menunggu review dari tim monev.",
-      proposalId: 1, // Referensi ke Proposal 1 (Sistem Monitoring Air)
-      status: "Menunggu", // Kondisi 1/2: Menunggu
-      tanggal: new Date("2025-10-01"),
-    },
-    {
-      id: 2,
-      lampiran: "/laporan-keuangan-akhir.pdf",
-      pesan: "Laporan akhir dan SPJ sudah lengkap dan disetujui tanpa revisi.",
-      proposalId: 2, // Referensi ke Proposal 2 (Literasi Keuangan)
-      status: "Disetujui", // Kondisi 1/1: Disetujui
-      tanggal: new Date("2025-10-05"),
-    },
-    {
-      id: 3,
-      lampiran: "/laporan-mutukopi-v1.pdf",
-      pesan: "Data yang digunakan tidak sesuai dengan metodologi di proposal. Mohon direvisi total.",
-      proposalId: 3, // Referensi ke Proposal 3 (Mutu Kopi)
-      status: "Ditolak", // Kondisi 1/2: Ditolak
-      tanggal: new Date("2025-10-07"),
-    },
-    {
-      id: 4,
-      lampiran: "/laporan-gizi-v1.pdf",
-      pesan: "Laporan kemajuan pengabdian telah disubmit. Menunggu verifikasi dokumen.",
-      proposalId: 4, // Referensi ke Proposal 4 (Sosialisasi Gizi)
-      status: "Menunggu", // Kondisi 2/2: Menunggu
-      tanggal: new Date("2025-10-08"),
-    },
-    {
-      id: 5,
-      lampiran: "/laporan-sentimen-v1.pdf",
-      pesan: "Hasil uji coba sistem sentimen tidak valid. Perlu perbaikan pada bab 4 dan 5.",
-      proposalId: 5, // Referensi ke Proposal 5 (Analisis Sentimen)
-      status: "Ditolak", // Kondisi 2/2: Ditolak
-      tanggal: new Date("2025-10-09"),
-    },
+  const [proposals, setProposals] = useState([]);
+  const [laporans, setLaporans] = useState([]);
+  const [selectedLaporanProposal, setSelectedLaporanProposal] = useState(null);
 
-    // 3 Laporan sisanya (Disetujui semua, merujuk ke proposal yang sudah ada)
-    {
-      id: 6,
-      lampiran: "/laporan-air-v2-revisi.pdf",
-      pesan: "Revisi laporan kemajuan telah disetujui. Silakan lanjutkan ke tahap berikutnya.",
-      proposalId: 1, // Laporan ke-2 untuk Proposal 1
-      status: "Disetujui", // Kondisi 2/3: Disetujui
-      tanggal: new Date("2025-10-10"),
-    },
-    {
-      id: 7,
-      lampiran: "/laporan-mutukopi-v2.pdf",
-      pesan: "Revisi proposal disetujui, sesuai dengan target luaran.",
-      proposalId: 3, // Laporan ke-2 untuk Proposal 3
-      status: "Disetujui", // Kondisi 3/3: Disetujui
-      tanggal: new Date("2025-10-12"),
-    },
-    {
-      id: 8,
-      lampiran: "/laporan-gizi-v2.pdf",
-      pesan: "Verifikasi dokumen pengabdian disetujui. Laporan akhir diterima.",
-      proposalId: 4, // Laporan ke-2 untuk Proposal 4
-      status: "Disetujui", // Kondisi 4/3: Disetujui (total 4 Disetujui)
-      tanggal: new Date("2025-10-13"),
-    },
-  ]);
-
-  // fungsi untuk simpan laporan baru
-  const handleUploadLaporan = (proposalId, file) => {
-    const newLaporan = {
-      id: laporans.length + 1,
-      lampiran: URL.createObjectURL(file),
-      pesan: "-",
-      proposalId,
-      status: "Menunggu",
-      tanggal: new Date(),
-    };
-    setLaporans([...laporans, newLaporan]);
-    alert("Laporan berhasil diupload!");
+  // Fungsi untuk mengambil data dari backend
+  const fetchProposals = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiService.get("/laporan/required");
+      setProposals(response.data);
+      console.log(response.data);
+    } catch (error) {
+      console.log(error)
+      const errorMessage = error.response?.data?.message || "Gagal memuat data proposal.";
+      addToast(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleTanggapan = (status, pesan, lampiran) => {
-    if (!selectedLaporan) return;
-    const updated = laporans.map((lap) =>
-      lap.id === selectedLaporan.id
-        ? { ...lap, status, pesan, lampiran: lampiran ? URL.createObjectURL(lampiran) : lap.lampiran }
-        : lap
-    );
-    setLaporans(updated);
-    alert(`Laporan ${status.toLowerCase()}`);
-    setSelectedLaporan(null);
+  const setSelectedLaporanFromProposal = (proposal) => {
+    let latestLaporan = proposal.laporan.sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    setSelectedLaporan(latestLaporan);
+    setSelectedLaporanProposal(proposal);
   };
 
-  // filter laporan dosen
-  const laporanDosen = laporans.filter((l) =>
-    proposals.some(
-      (p) =>
-        p.id === l.proposalId &&
-        p.contributors.includes("Dr. Dosen A") // ganti sesuai user login
-    )
-  );
+  const [catatanTanggapan, setCatatanTanggapan] = useState("");
+  const [lampiranTanggapan, setLampiranTanggapan] = useState(null); // Untuk menampung File object
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // filter proposal yang perlu laporan tapi belum upload atau ditolak
-  const perluLaporan = proposals.filter((p) => {
-    if (!p.perluLaporan) return false;
-    const laporan = laporans.find((l) => l.proposalId === p.id);
-    return !laporan || laporan.status === "Ditolak";
-  });
+  // Tambahkan useEffect ini untuk mereset form setiap kali modal dibuka
+  useEffect(() => {
+    if (selectedLaporan) {
+      setCatatanTanggapan("");
+      setLampiranTanggapan(null);
+    }
+  }, [selectedLaporan]);
 
-  const getProposalById = (id) => proposals.find((p) => p.id === id);
+  const handleTanggapan = async (status) => {
+    // Guard clause untuk memastikan ada laporan yang dipilih
+    if (!selectedLaporan) {
+      addToast("Tidak ada laporan yang dipilih.", "error");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Gunakan FormData karena kita mengirim file
+    const formData = new FormData();
+    formData.append('status', status);
+    formData.append('catatan', catatanTanggapan);
+
+    // Lampirkan file hanya jika ada
+    if (lampiranTanggapan) {
+      formData.append('lampiran', lampiranTanggapan);
+    }
+
+    try {
+      // Panggil endpoint backend
+      await apiService.post(`/laporan/${selectedLaporan.id}/respond`, formData);
+
+      addToast("Tanggapan untuk laporan berhasil dikirim.", "success");
+      fetchProposals(); // Refresh data di halaman
+      setSelectedLaporan(null); // Tutup modal
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Gagal mengirim tanggapan.";
+      addToast(errorMessage, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Mengambil data saat komponen pertama kali dimuat
+  useEffect(() => {
+    fetchProposals();
+  }, []); // Dependency array kosong agar hanya berjalan sekali
 
   return (
     <div className="p-6 space-y-4">
@@ -215,19 +109,11 @@ function LaporanPage({ userRole = "ketua" }) {
 
       {/* Tabs */}
       <div role="tablist" className="tabs tabs-boxed">
-        {userRole === "ketua" && (
-          <button
-            className={`tab ${activeTab === "semua" ? "tab-active" : ""}`}
-            onClick={() => setActiveTab("semua")}
-          >
-            Semua Laporan
-          </button>
-        )}
         <button
           className={`tab ${activeTab === "upload" ? "tab-active" : ""}`}
           onClick={() => setActiveTab("upload")}
         >
-          Upload Laporan
+          Laporan
         </button>
         <button
           className={`tab ${activeTab === "riwayat" ? "tab-active" : ""}`}
@@ -237,34 +123,21 @@ function LaporanPage({ userRole = "ketua" }) {
         </button>
       </div>
 
-      {/* Tab: Semua laporan (Ketua) */}
-      {userRole === "ketua" && activeTab === "semua" && (
-        <div className="grid gap-3 mt-4">
-          {laporans
-            .sort((a, b) => (a.status === "Menunggu" ? -1 : 1))
-            .map((lap) => {
-              const proposal = proposals.find((p) => p.id === lap.proposalId);
-              return (
-                <LaporanCard laporan={lap} proposal={proposal} key={lap.id} onClick={() => setSelectedLaporan(lap)} />
-              );
-            })}
-        </div>
-      )}
-
       {/* Tab: Upload laporan (Dosen + Ketua) */}
       {activeTab === "upload" && (
         <div className="grid gap-3 mt-4">
-          {perluLaporan.length > 0 && <p className="text-sm text-base-content/70">Berikut merupakan proposal yang perlu laporan dan belum diupload:</p>}
-          {perluLaporan.length === 0 && (
+          {proposals.length > 0 && <p className="text-sm text-base-content/70">Berikut merupakan proposal yang perlu laporan dan belum diupload:</p>}
+          {proposals.length === 0 && (
             <p className="text-sm text-base-content/70">Tidak ada laporan yang perlu diupload.</p>
           )}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {perluLaporan.map((p) => (
+            {proposals.map((p) => (
               <ProposalCard
                 key={p.id}
                 proposal={p}
                 page={"laporan"}
                 onClick={() => setSelectedProposal(p)}
+                onReview={() => setSelectedLaporanFromProposal(p)}
               />
             ))}
           </div>
@@ -294,19 +167,14 @@ function LaporanPage({ userRole = "ketua" }) {
               Detail Laporan Proposal
             </h3>
             <p className="text-sm text-base-content/70 mb-1">
-              {dayjs(selectedLaporan.tanggal).format("DD MMM YYYY")}
+              {dayjs(selectedLaporan.date).format("DD MMM YYYY")}
             </p>
             <p className="text-sm text-black mb-3">
               <span className="font-semibold">Status Laporan: </span>
               <span
-                className={`badge ${selectedLaporan.status === "Menunggu"
-                  ? "badge-warning"
-                  : selectedLaporan.status === "Ditolak"
-                    ? "badge-error"
-                    : "badge-success"
-                  }`}
+                className={`badge ${STATUS_PROPOSAL_LAPORAN_BADGE[selectedLaporan.status].color}`}
               >
-                {selectedLaporan.status}
+                {STATUS_PROPOSAL_LAPORAN_BADGE[selectedLaporan.status].text}
               </span>
             </p>
 
@@ -314,44 +182,48 @@ function LaporanPage({ userRole = "ketua" }) {
               <input type="checkbox" className="peer" />
               <div className="collapse-title font-semibold after:start-5 after:end-auto pe-4 ps-12">Lihat Detail Proposal</div>
               <div className="collapse-content text-sm">
-                <ProposalDetailContent proposal={getProposalById(selectedLaporan.proposalId)} />
+                <ProposalDetailContent proposal={selectedLaporanProposal} />
               </div>
             </div>
 
-            <a
-              href={selectedLaporan.lampiran}
+            <div
+              onClick={() => { onDownloadServerFile(selectedLaporan.berkas_laporan) }}
               target="_blank"
               className="btn btn-sm btn-outline gap-2 my-3"
             >
               <PaperClipIcon className="w-4 h-4" />
               Lihat Laporan Proposal
-            </a>
+            </div>
 
-            {userRole === "ketua" && selectedLaporan.status === "Menunggu" && <div>
+            {user.role_id == 2 && isMenunggu(selectedLaporan.status) && <div>
               <textarea
                 placeholder="Tambahkan pesan untuk dosen..."
                 className="textarea textarea-bordered w-full mb-3"
-                onChange={(e) => (selectedLaporan.pesan = e.target.value)}
+                onChange={(e) => setCatatanTanggapan(e.target.value)}
+                disabled={isSubmitting}
               ></textarea>
 
               <input
                 type="file"
                 accept="application/pdf"
                 className="file-input file-input-bordered w-full mb-4"
-                onChange={(e) => (selectedLaporan.lampiran = e.target.files[0])}
+                onChange={(e) => setLampiranTanggapan(e.target.files[0])}
+                disabled={isSubmitting}
               />
 
               <div className="flex justify-end gap-2">
                 <button
-                  className="btn btn-error btn-sm"
-                  onClick={() => handleTanggapan("Ditolak", selectedLaporan.pesan, selectedLaporan.lampiran)}
+                  className={`btn btn-error btn-sm ${isSubmitting ? 'loading' : ''}`}
+                  onClick={() => handleTanggapan(TIPE_PERSETUJUAN.DITOLAK)} // Menggunakan konstanta status
+                  disabled={isSubmitting}
                 >
                   <XMarkIcon className="w-4 h-4" />
                   Tolak
                 </button>
                 <button
-                  className="btn btn-success btn-sm"
-                  onClick={() => handleTanggapan("Disetujui", selectedLaporan.pesan, selectedLaporan.lampiran)}
+                  className={`btn btn-success btn-sm ${isSubmitting ? 'loading' : ''}`}
+                  onClick={() => handleTanggapan(TIPE_PERSETUJUAN.DISETUJUI)} // Menggunakan konstanta status
+                  disabled={isSubmitting}
                 >
                   <CheckIcon className="w-4 h-4" />
                   Setujui
@@ -372,9 +244,10 @@ function LaporanPage({ userRole = "ketua" }) {
 
       <ProposalDetailForUploadModal
         open={!!selectedProposal}
+        onSuccess={() => fetchProposals()}
         onClose={() => setSelectedProposal(null)}
         proposal={selectedProposal}
-        userRole={userRole}
+        userRole={user.role_id}
       />
     </div>
   );
