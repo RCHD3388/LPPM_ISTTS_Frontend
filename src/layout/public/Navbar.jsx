@@ -79,7 +79,9 @@ const Navbar = () => {
                 </ul>
               </div>
 
-              <div className="btn btn-primary ms-5">Login</div>
+              <div className="btn btn-primary ms-5"
+              onClick={() => window.location.href = "/login"}
+              >Login</div>
             </div>
 
             {/* Mobile menu button */}

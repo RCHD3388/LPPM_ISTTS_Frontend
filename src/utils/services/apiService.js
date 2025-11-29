@@ -1,4 +1,5 @@
 import axios from "axios";
+import LocalStorageService, {} from "./LocalStorageService";
 
 class ApiService {
   constructor(baseURL) {
@@ -13,8 +14,10 @@ class ApiService {
     // Request interceptor
     this.api.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem("token");
-        if (token) {
+        const user = LocalStorageService.getItem("app_user");
+        let token = "";
+        if (user && user.token) {
+          token = user.token;
           config.headers["Authorization"] = `Bearer ${token}`;
         }
         return config;

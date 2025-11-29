@@ -1,11 +1,39 @@
 import React from "react";
 import { AcademicCapIcon } from "@heroicons/react/24/solid";
 import { FcGoogle } from "react-icons/fc";
+import { GoogleLogin } from "@react-oauth/google";
+import { useToast } from "../../context/ToastContext";
+import { useNavigate } from "react-router-dom";
+import apiService from "../../utils/services/apiService";
+import LocalStorageService from "../../utils/services/LocalStorageService";
 
 const LoginPage = () => {
-  const handleGoogleLogin = () => {
-    // TODO: Integrasikan login Google di sini (misal Firebase / OAuth2)
-    alert("Login menggunakan Google sedang diproses...");
+  const { addToast } = useToast()
+  const navigate = useNavigate();
+
+  const handleLoginSuccess = async (credentialResponse) => {
+    // credentialResponse.credential adalah JWT yang berisi info user
+    const idToken = credentialResponse.credential;
+    console.log(idToken)
+    try {
+      const response = await apiService.post("/auth/google-login", { token: idToken });
+
+      LocalStorageService.clear()
+      LocalStorageService.setItem("app_token", response.data.token);
+      LocalStorageService.setItem("app_user", response.data);
+
+      addToast("Berhasil Login", "success")
+      navigate('/app');
+    } catch (error) {
+      let message = error?.response?.data?.message || "Failed to Login"
+      addToast(message, "error")
+    }
+
+  };
+
+  const handleLoginError = () => {
+    console.error("Login Gagal");
+    addToast("Login Gagal", "error")
   };
 
   return (
@@ -34,13 +62,15 @@ const LoginPage = () => {
           <div className="divider my-6">Login Sebagai Admin</div>
 
           {/* Tombol Login Google */}
-          <button
-            onClick={handleGoogleLogin}
-            className="btn btn-lg bg-white hover:bg-base-200 border border-base-300 flex items-center gap-3 w-full justify-center text-base font-medium text-base-content shadow-md"
-          >
-            <FcGoogle className="w-6 h-6" />
-            Login dengan Google
-          </button>
+          <div className="w-full flex justify-center">
+            <GoogleLogin
+              onSuccess={handleLoginSuccess}
+              onError={handleLoginError}
+              theme="outline"
+              size="large"
+              width="320px" // Sesuaikan lebar jika perlu
+            />
+          </div>
 
           {/* Footer */}
           <p className="mt-10 text-sm text-base-content/60">
