@@ -3,7 +3,7 @@ import { AcademicCapIcon } from "@heroicons/react/24/solid";
 import { FcGoogle } from "react-icons/fc";
 import { GoogleLogin } from "@react-oauth/google";
 import { useToast } from "../../context/ToastContext";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import apiService from "../../utils/services/apiService";
 import LocalStorageService from "../../utils/services/LocalStorageService";
 
@@ -71,6 +71,7 @@ const LoginPage = () => {
               width="320px" // Sesuaikan lebar jika perlu
             />
           </div>
+          <NavLink to="/" className="btn btn-info btn-outline" style={{width: "320px"}}>Back To Dashboard</NavLink>
 
           {/* Footer */}
           <p className="mt-10 text-sm text-base-content/60">
