@@ -3,11 +3,13 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiService from "../../utils/services/apiService";
 import { fileApi } from "../../utils/services/fileApi";
+import { useToast } from "../../context/ToastContext";
 
 const PengumumanDetailPage = () => {
   const [pengumuman, setPengumuman] = useState(null);
   const { pengumumanId } = useParams()
   const deleteModalRef = useRef(null);
+  const {addToast} = useToast();
 
   const fetchData = async () => {
     try {
@@ -27,6 +29,7 @@ const PengumumanDetailPage = () => {
     try {
       await apiService.delete(`/pengumuman/${pengumumanId}`);
       deleteModalRef.current.close();
+      addToast("Pengumuman deleted successfully", "success")
       navigate("/app/pengumuman");
     } catch (error) {
       console.error("Failed to delete pengumuman:", error);

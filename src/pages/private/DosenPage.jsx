@@ -47,6 +47,8 @@ function DosenPage() {
         page,
         limit,
         search: searchQuery || "",
+        sortBy: "name_tanpa_gelar",
+        order: "DESC"
       });
 
       const banksResponse = await apiService.get("/bank")

@@ -54,8 +54,9 @@ function SettingPage() {
     fetchMailingList()
   }, [])
 
-  const handleUpdateData = () => {
-    alert("Data publik LPPM berhasil diperbarui!");
+  const handleUpdateData = async () => {
+    await apiService.post(`scrapping/scheduler/run`)
+    addToast("Data LPPM Publik berhasil diperbarui", "success")
   };
 
   return (

@@ -1,11 +1,10 @@
 // components/ProposalFilterBar.jsx
 import React from "react";
 import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { STATUS_PROPOSAL_LAPORAN_BADGE } from "./../../utils/constants/constant";
 
-function ProposalFilterBar({ filters, setFilters }) {
-  const statuses = ["", "Menunggu", "Disetujui", "Disetujui + Laporan", "Ditolak"];
-  const periodes = ["", "2024/2025", "2025/2026", "2026/2027"];
-  const tags = ["", "Teknologi", "Pendidikan", "Kesehatan"];
+// Terima props baru: periodeOptions dan tagOptions
+function ProposalFilterBar({ filters, setFilters, periodeOptions, tagOptions }) {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3 bg-base-100 p-3 rounded-lg shadow-sm">
@@ -14,42 +13,53 @@ function ProposalFilterBar({ filters, setFilters }) {
         <span className="text-sm font-medium">Filter:</span>
       </div>
 
+      {/* Filter Status (Tidak berubah) */}
       <select
         className="select select-bordered select-sm"
         value={filters.status}
         onChange={(e) => setFilters((prev) => ({ ...prev, status: e.target.value }))}
       >
-        {statuses.map((s, i) => (
-          <option key={i} value={s}>
-            {s || "Semua Status"}
+        <option key={4} value={-1}>
+          {"Semua Status"}
+        </option>
+        {Object.entries(STATUS_PROPOSAL_LAPORAN_BADGE).map(([key, value]) => (
+          <option key={key} value={key}>
+            {value.text || "Semua Status"}
           </option>
         ))}
       </select>
 
+      {/* Filter Periode (DINAMIS) */}
       <select
         className="select select-bordered select-sm"
         value={filters.periode}
         onChange={(e) => setFilters((prev) => ({ ...prev, periode: e.target.value }))}
       >
-        {periodes.map((p, i) => (
-          <option key={i} value={p}>
-            {p || "Semua Periode"}
+        <option value="">Semua Periode</option>
+        {/* Gunakan prop 'periodeOptions' */}
+        {periodeOptions.map((periode) => (
+          <option key={periode.id} value={periode.id}>
+            {periode.name}
           </option>
         ))}
       </select>
 
+      {/* Filter Tag (DINAMIS) */}
       <select
         className="select select-bordered select-sm"
         value={filters.tag}
         onChange={(e) => setFilters((prev) => ({ ...prev, tag: e.target.value }))}
       >
-        {tags.map((t, i) => (
-          <option key={i} value={t}>
-            {t || "Semua Tag"}
+        <option value="">Semua Tag</option>
+        {/* Gunakan prop 'tagOptions' */}
+        {tagOptions.map((tag) => (
+          <option key={tag.id} value={tag.id}>
+            {tag.name}
           </option>
         ))}
       </select>
 
+      {/* Pencarian (Tidak berubah) */}
       <div className="join ml-auto">
         <div className="join-item">
           <MagnifyingGlassIcon className="w-5 h-5 absolute mt-2 ml-2 text-base-content/60" />

@@ -32,7 +32,10 @@ function ProposalUploadModal({ open, onClose, onSuccess }) {
         setIsFetchingOptions(true);
         try {
           const [dosenRes, periodeRes, tagRes] = await Promise.all([
-            apiService.get("/dosen/all"),
+            apiService.get("/dosen/all", {
+              sortBy: "name_tanpa_gelar",
+              order: "ASC"
+            }),
             apiService.get("/periode"),
             apiService.get("/tag")
           ]);

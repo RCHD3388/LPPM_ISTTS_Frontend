@@ -12,11 +12,14 @@ function ProposalPage() {
   const [proposals, setProposals] = useState([]);
   const [filters, setFilters] = useState({ search: "", status: "", periode: "", tag: "" });
   const [activeTab, setActiveTab] = useState("mine"); // Default tab untuk Ka LPPM
-  
+
   // --- State UI & Modal ---
   const [isLoading, setIsLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState(null);
+
+  const [periodeOptions, setPeriodeOptions] = useState([]);
+  const [tagOptions, setTagOptions] = useState([]);
 
   // --- Hook & Data Pengguna ---
   const { addToast } = useToast();
@@ -37,28 +40,68 @@ function ProposalPage() {
     }
   };
 
+  // Fungsi untuk mengambil SEMUA data yang dibutuhkan halaman
+  const fetchPageData = async () => {
+    setIsLoading(true);
+    try {
+      // Ambil semua data secara bersamaan untuk efisiensi
+      const [proposalRes, periodeRes, tagRes] = await Promise.all([
+        apiService.get("/proposal"),
+        apiService.get("/periode"),
+        apiService.get("/tag"),
+      ]);
+
+      setProposals(proposalRes.data);
+      setPeriodeOptions(periodeRes.data);
+      setTagOptions(tagRes.data);
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || "Gagal memuat data halaman.";
+      addToast(errorMessage, "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Mengambil data saat komponen pertama kali dimuat
   useEffect(() => {
-    fetchProposals();
+    fetchPageData();
   }, []); // Dependency array kosong agar hanya berjalan sekali
 
   // Memoized filtering untuk performa
   const filteredProposals = useMemo(() => {
     let data = proposals;
 
-    // Filter berdasarkan tab untuk Ka LPPM
-    if (String(user.role) === '2') {
-      if (activeTab === 'mine') {
-        data = data.filter(p => 
-          p.kontributor.some(k => k.id === user.id && k.status_kontributor === 'Leader')
-        );
-      }
-      // Jika tab 'others', tidak perlu filter, tampilkan semua
+    // 1. Filter berdasarkan Tab untuk Ka LPPM (logika ini sudah ada)
+    // if (String(user.role) === '2') {
+    //   if (activeTab === 'mine') {
+    //     data = data.filter(p =>
+    //       p.kontributor.some(k => k.id === user.id)
+    //     );
+    //   }
+    // }
+
+    // 2. Terapkan filter dari ProposalFilterBar
+    // Filter berdasarkan Pencarian Judul
+    if (filters.search) {
+      const searchTerm = filters.search.toLowerCase();
+      data = data.filter(p => p.judul.toLowerCase().includes(searchTerm));
     }
 
-    // TODO: Implementasi filter dari ProposalFilterBar di sini
-    // if (filters.search) { ... }
-    // if (filters.status) { ... }
+    // Filter berdasarkan Status
+    if (filters.status && filters.status != -1) {
+      data = data.filter(p => String(p.status) === filters.status);
+    }
+
+    // Filter berdasarkan Periode
+    if (filters.periode) {
+      data = data.filter(p => p.periode && String(p.periode.id) === filters.periode);
+    }
+
+    // Filter berdasarkan Tag
+    if (filters.tag) {
+      data = data.filter(p => p.tag && String(p.tag.id) === filters.tag);
+    }
 
     return data;
   }, [proposals, activeTab, user.id, user.role, filters]);
@@ -66,7 +109,7 @@ function ProposalPage() {
   // Handler setelah proposal berhasil ditambahkan
   const handleAddProposal = () => {
     setShowUpload(false);
-    fetchProposals(); // Ambil ulang data untuk menampilkan proposal baru
+    fetchPageData(); // Ambil ulang data untuk menampilkan proposal baru
   };
 
   if (isLoading) {
@@ -106,13 +149,18 @@ function ProposalPage() {
         </div>
       )}
 
-      <ProposalFilterBar filters={filters} setFilters={setFilters} />
+      <ProposalFilterBar
+        filters={filters}
+        setFilters={setFilters}
+        periodeOptions={periodeOptions}
+        tagOptions={tagOptions}
+      />
 
       {filteredProposals.length === 0 ? (
         <div className="text-center bg-base-100 rounded-lg p-10">
           <p className="text-base-content/60">
-            {activeTab === 'mine' && String(user.role) === '2' 
-              ? "Anda belum mengajukan proposal sebagai ketua." 
+            {activeTab === 'mine' && String(user.role) === '2'
+              ? "Anda belum mengajukan proposal sebagai ketua."
               : "Tidak ada proposal yang ditemukan."
             }
           </p>
